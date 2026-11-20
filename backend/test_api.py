@@ -13,7 +13,10 @@ Tests FastAPI endpoints:
 import sys
 import unittest
 from fastapi.testclient import TestClient
-from main import app
+from main import app, get_current_user
+
+# Mock authentication for test suite
+app.dependency_overrides[get_current_user] = lambda: {"id": "00000000-0000-0000-0000-000000000001", "email": "test@fintrust.ai"}
 
 client = TestClient(app)
 

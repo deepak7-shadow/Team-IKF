@@ -162,7 +162,10 @@
     border: 1px solid #E9E1D1;
     border-radius: 0.75rem;
     color: #25251F;
-    padding: 0.625rem 0.875rem;
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
     font-size: 0.875rem;
     width: 100%;
     transition: all 0.2s ease;

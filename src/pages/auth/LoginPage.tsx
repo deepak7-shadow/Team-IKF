@@ -154,7 +154,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="analyst@firm.com"
-                  className="input-glass pl-9.5 text-xs"
+                  className="input-glass pl-10 text-xs"
                 />
               </div>
             </div>
@@ -181,7 +181,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="input-glass pl-9.5 pr-10 text-xs"
+                  className="input-glass pl-10 pr-10 text-xs"
                 />
                 <button
                   type="button"
