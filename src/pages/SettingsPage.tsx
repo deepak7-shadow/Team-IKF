@@ -3,7 +3,6 @@ import {
   User,
   Bell,
   Save,
-  Camera,
   Lock,
   Mail,
   Eye,
@@ -11,6 +10,7 @@ import {
   AlertCircle,
   CheckCircle2,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
@@ -184,25 +184,56 @@ export default function SettingsPage() {
         <div className="space-y-6">
           {/* Profile card */}
           <Card className="p-6 space-y-6 border-[#E9E1D1]">
-            <div className="flex items-center gap-4">
-              {/* Avatar */}
-              <div className="relative group">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-champagne flex items-center justify-center text-xl font-black text-[#25251F] shadow-gold-glow border border-[#C49A45]/30 select-none">
-                  {avatarInitials}
+            {/* Formatted Identity Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#FAF7F0] border border-[#E9E1D1]">
+              <div className="flex items-center gap-4">
+                {/* Avatar with Status Ring */}
+                <div className="relative shrink-0">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-champagne flex items-center justify-center text-lg font-black text-[#25251F] shadow-sm border border-[#C49A45]/40 select-none">
+                    {avatarInitials}
+                  </div>
+                  <div
+                    className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#258B65] border-2 border-white shadow-xs"
+                    title="Active Session"
+                  />
                 </div>
-                <div className="absolute inset-0 rounded-2xl bg-[#25251F]/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
-                  <Camera className="w-5 h-5 text-white" />
+
+                {/* Name, Badges & Email */}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-base sm:text-lg font-bold text-[#25251F] tracking-tight">
+                      {userName || "Analyst"}
+                    </h3>
+                    <Badge variant="gradient" size="sm">
+                      VERIFIED ANALYST
+                    </Badge>
+                    <Badge
+                      variant={isSupabaseConfigured() ? "success" : "neutral"}
+                      size="sm"
+                      dot
+                    >
+                      {isSupabaseConfigured() ? "Live Session" : "Dev Mode"}
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 text-xs text-[#777365]">
+                    <Mail className="w-3.5 h-3.5 text-[#C49A45] shrink-0" />
+                    <span className="font-mono text-[11px] sm:text-xs text-[#524E42]">
+                      {userEmail || "—"}
+                    </span>
+                  </div>
                 </div>
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-[#25251F] capitalize">{userName || "Analyst"}</h3>
-                <p className="text-xs text-[#777365] font-mono">{userEmail || "—"}</p>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <Badge variant="gradient" size="sm">VERIFIED ANALYST</Badge>
-                  <span className="text-[11px] text-[#777365]">
-                    {isSupabaseConfigured() ? "Live Supabase Session" : "Dev Mode"}
-                  </span>
-                </div>
+
+              {/* Institutional Tier indicator */}
+              <div className="hidden sm:flex flex-col sm:items-end text-right text-[11px] text-[#777365] space-y-0.5 shrink-0 pl-2">
+                <span className="font-bold text-[#25251F] flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#C49A45]" />
+                  Institutional Access
+                </span>
+                <span className="text-[10px] text-[#A88032] font-semibold tracking-wide">
+                  SEBI Forensic Tier
+                </span>
               </div>
             </div>
 
