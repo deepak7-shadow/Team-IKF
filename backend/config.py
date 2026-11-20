@@ -23,7 +23,8 @@ MAX_FILE_BYTES: int = MAX_FILE_SIZE_MB * 1024 * 1024
 CORS_ORIGINS: list[str] = [
     o.strip()
     for o in os.getenv(
-        "CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
+        "CORS_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173,https://ikf-three.vercel.app"
     ).split(",")
     if o.strip()
 ]
