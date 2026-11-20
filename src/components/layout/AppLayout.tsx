@@ -8,7 +8,7 @@ export default function AppLayout() {
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F8F5EC] text-[#25251F] flex flex-col relative overflow-hidden font-sans selection:bg-[#C49A45] selection:text-white">
+    <div className="h-screen w-full bg-[#F8F5EC] text-[#25251F] flex relative overflow-hidden font-sans selection:bg-[#C49A45] selection:text-white">
       {/* Background ambient luxury decorative glows */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {/* Top radial warm champagne glow */}
@@ -21,7 +21,7 @@ export default function AppLayout() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#E9E1D130_1px,transparent_1px),linear-gradient(to_bottom,#E9E1D130_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35" />
       </div>
 
-      <div className="flex flex-1 z-10 relative h-screen overflow-hidden">
+      <div className="flex flex-1 z-10 relative h-full w-full overflow-hidden">
         {/* Desktop Persistent / Collapsible Sidebar */}
         <div
           className={`hidden lg:block shrink-0 h-full transition-all duration-300 ease-in-out ${

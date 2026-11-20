@@ -191,7 +191,7 @@ export default function Sidebar({
       </div>
 
       {/* Bottom User & Status Section */}
-      <div className="p-3 border-t border-[#E9E1D1] space-y-2">
+      <div className="p-3 border-t border-[#E9E1D1] space-y-2 mt-auto">
         {/* User Profile Card */}
         <div
           className={`p-2 rounded-xl bg-[#FFFEFA] border border-[#E9E1D1] flex items-center shadow-sm ${
