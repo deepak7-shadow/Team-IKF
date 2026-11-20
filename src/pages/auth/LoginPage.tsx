@@ -126,7 +126,7 @@ export default function LoginPage() {
 
           <div className="space-y-1">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#25251F] tracking-tight">
-              Sign In to Terminal
+              Sign In to Platform
             </h1>
             <p className="text-xs sm:text-sm text-[#777365]">
               Enter your credentials to access the forensic verification platform.
@@ -205,7 +205,7 @@ export default function LoginPage() {
                   onChange={(e) => setRememberMe(e.target.checked)}
                   className="rounded border-[#E9E1D1] text-[#C49A45] focus:ring-[#C49A45] cursor-pointer"
                 />
-                <span>Remember this terminal session</span>
+                <span>Remember this device</span>
               </label>
             </div>
 
@@ -220,7 +220,7 @@ export default function LoginPage() {
                 <div className="w-5 h-5 border-2 border-[#25251F] border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
-                  Authenticate & Launch Terminal <ArrowRight className="w-4 h-4 ml-2" />
+                  Sign In to Platform <ArrowRight className="w-4 h-4 ml-2" />
                 </>
               )}
             </Button>
@@ -233,7 +233,7 @@ export default function LoginPage() {
               to="/register"
               className="font-bold text-[#A88032] hover:text-[#25251F] transition-colors ml-1"
             >
-              Request Analyst Terminal Access
+              Request Platform Access
             </Link>
           </div>
         </div>

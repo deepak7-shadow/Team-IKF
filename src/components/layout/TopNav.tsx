@@ -264,7 +264,7 @@ export default function TopNav({
             <p className="text-xs font-semibold text-[#25251F] leading-tight capitalize">
               {displayName}
             </p>
-            <p className="text-[10px] text-[#A88032] font-medium">Verified Terminal</p>
+            <p className="text-[10px] text-[#A88032] font-medium">Verified Platform</p>
           </div>
         </div>
       </div>

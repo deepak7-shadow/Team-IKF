@@ -246,7 +246,7 @@ export default function Sidebar({
               </span>
             </div>
             <p className="text-[10px] text-[#777365] leading-snug">
-              Non-advisory research terminal. Governed by statutory compliance norms.
+              Non-advisory research platform. Governed by statutory compliance norms.
             </p>
           </div>
         )}

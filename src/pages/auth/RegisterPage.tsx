@@ -102,7 +102,7 @@ export default function RegisterPage() {
               <span>INSTITUTIONAL GRADE COMPLIANCE</span>
             </div>
             <h2 className="text-3xl font-extrabold text-[#25251F] tracking-tight leading-tight">
-              Create your FINTRUST AI Terminal Account
+              Create your FINTRUST AI Account
             </h2>
             <p className="text-sm text-[#777365] leading-relaxed">
               Empower your research and due diligence workflows with automated claim audits,
@@ -158,7 +158,7 @@ export default function RegisterPage() {
               Create Analyst Account
             </h1>
             <p className="text-xs sm:text-sm text-[#777365]">
-              Register to access the forensic verification terminal.
+              Register to access the forensic verification platform.
             </p>
           </div>
 
@@ -294,7 +294,7 @@ export default function RegisterPage() {
           </form>
 
           <div className="pt-4 border-t border-[#E9E1D1] text-center text-xs text-[#777365]">
-            Already have a terminal license?{" "}
+            Already have an account?{" "}
             <Link
               to="/login"
               className="font-bold text-[#A88032] hover:text-[#25251F] transition-colors ml-1"
