@@ -79,25 +79,25 @@ export default function LoginPage() {
 
           {/* Brand & Header */}
           <div className="flex flex-col items-center text-center space-y-4">
-            {/* Giant Logo */}
-            <Link to="/dashboard" className="flex flex-col items-center gap-3 group">
-              {/* Glowing logo ring */}
-              <div className="relative">
-                <div className="absolute -inset-2 rounded-3xl bg-gradient-to-br from-[#C49A45]/40 via-[#E4C477]/50 to-[#D6A94F]/40 blur-xl opacity-80 group-hover:opacity-100 transition-opacity" />
-                <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-[#C49A45] via-[#D6A94F] to-[#A87B2A] flex items-center justify-center shadow-[0_8px_32px_rgba(196,154,69,0.45)] border-2 border-[#E4C477]/60 transition-transform group-hover:scale-105">
+            {/* Logo left + Brand name right */}
+            <Link to="/dashboard" className="flex items-center gap-4 group self-center">
+              {/* Glowing logo */}
+              <div className="relative shrink-0">
+                <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-br from-[#C49A45]/40 via-[#E4C477]/50 to-[#D6A94F]/40 blur-lg opacity-80 group-hover:opacity-100 transition-opacity" />
+                <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-[#C49A45] via-[#D6A94F] to-[#A87B2A] flex items-center justify-center shadow-[0_6px_24px_rgba(196,154,69,0.40)] border-2 border-[#E4C477]/60 transition-transform group-hover:scale-105">
                   <ShieldCheck className="w-9 h-9 sm:w-10 sm:h-10 text-white drop-shadow-md" />
                 </div>
               </div>
 
-              {/* Brand Name */}
-              <div className="flex flex-col items-center gap-0.5">
+              {/* Brand Name — text left-aligned */}
+              <div className="flex flex-col text-left">
                 <span className="font-black text-3xl sm:text-4xl tracking-tight text-[#25251F] leading-none">
                   FINTRUST{" "}
                   <span className="bg-gradient-to-r from-[#C49A45] via-[#E4C477] to-[#A87B2A] bg-clip-text text-transparent font-black">
                     AI
                   </span>
                 </span>
-                <span className="text-sm text-[#9E8B6A] font-semibold tracking-widest uppercase mt-1">
+                <span className="text-xs text-[#9E8B6A] font-semibold tracking-widest uppercase mt-1">
                   Clarity before conviction.
                 </span>
               </div>
