@@ -11,6 +11,14 @@ import {
   ExternalLink,
   ChevronDown,
   ChevronRight,
+  Database,
+  Globe,
+  Shield,
+  ShieldCheck,
+  CheckCircle2,
+  Landmark,
+  Layers,
+  FileText,
 } from "lucide-react";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
@@ -23,7 +31,7 @@ import {
 } from "../data/educationalContent";
 import type { EducationArticle, GlossaryItem, FandOTopic, RiskPrinciple } from "../data/educationalContent";
 
-type ActiveTab = "articles" | "glossary" | "fo" | "risks";
+type ActiveTab = "sources" | "articles" | "glossary" | "fo" | "risks";
 
 const DIFFICULTY_COLORS = {
   beginner: "success",
@@ -57,7 +65,7 @@ const CATEGORIES = [
 const GLOSSARY_CATEGORIES = ["All", "Valuation", "Market Dynamics", "Trading Mechanics", "Regulation", "Derivatives"];
 
 export default function InvestorEducationPage() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("articles");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("sources");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [glossaryCategory, setGlossaryCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -89,6 +97,7 @@ export default function InvestorEducationPage() {
   }, [glossaryCategory, searchQuery]);
 
   const TABS = [
+    { id: "sources" as ActiveTab, label: "4 Intelligence Sources", icon: Database, count: 4 },
     { id: "articles" as ActiveTab, label: "Education Articles", icon: BookOpen, count: EDUCATIONAL_ARTICLES.length },
     { id: "glossary" as ActiveTab, label: "Financial Glossary", icon: BookMarked, count: FINANCIAL_GLOSSARY.length },
     { id: "fo" as ActiveTab, label: "Futures & Options", icon: TrendingDown, count: F_AND_O_TOPICS.length },
@@ -100,17 +109,17 @@ export default function InvestorEducationPage() {
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E9E1D1] pb-5">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="px-2.5 py-0.5 rounded text-[10px] font-bold bg-[#D8F3E5] text-[#258B65] border border-[#258B65]/30">
               INVESTOR SHIELD
             </span>
-            <span className="text-xs text-[#777365]">SEBI &amp; SEC Financial Literacy</span>
+            <span className="text-xs text-[#777365]">SEBI, NSE, BSE &amp; Financial Media Verification Guides</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#25251F] tracking-tight">
             Investor Education &amp; Due Diligence
           </h1>
           <p className="text-xs sm:text-sm text-[#777365]">
-            Regulatory guides, forensic checklists, financial glossary, and F&amp;O risk warnings.
+            Forensic guides for verifying claims across SEBI, NSE, BSE, and financial news sources.
           </p>
         </div>
       </div>
@@ -179,6 +188,216 @@ export default function InvestorEducationPage() {
           </button>
         ))}
       </div>
+
+      {/* ═══════════════════════════════════════════
+          TAB 0 — 4 INTELLIGENCE SOURCES GUIDE
+      ═══════════════════════════════════════════ */}
+      {activeTab === "sources" && (
+        <div className="space-y-6">
+          <div className="p-5 rounded-2xl bg-[#FAF7F0] border border-[#E9E1D1] space-y-2">
+            <div className="flex items-center gap-2">
+              <Database className="w-4 h-4 text-[#C49A45]" />
+              <h3 className="text-sm font-bold text-[#25251F]">
+                The Four Pillars of FINTRUST AI Due Diligence
+              </h3>
+            </div>
+            <p className="text-xs text-[#777365] leading-relaxed">
+              Never rely on a single social media post, screenshot, or viral video before deploying capital.
+              FINTRUST AI benchmarks claims across statutory regulators, primary national stock exchanges, and respected financial journalism to ensure complete factual verification.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* SEBI */}
+            <div className="glass-card bg-[#FFFEFA] border border-[#E9E1D1] p-5 rounded-2xl space-y-4 shadow-warm flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#9E7828] bg-[#F5EEDB] border border-[#C49A45]/30 px-2 py-0.5 rounded">
+                    Tier 1 · Statutory Regulatory
+                  </span>
+                  <a
+                    href="https://www.sebi.gov.in"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-[11px] text-[#C49A45] hover:underline"
+                  >
+                    sebi.gov.in <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+                <h3 className="text-base font-bold text-[#25251F] tracking-tight">
+                  Source 1: SEBI (Securities &amp; Exchange Board of India)
+                </h3>
+                <p className="text-xs text-[#777365] leading-relaxed">
+                  The statutory capital markets regulator protecting investor interests, enforcing code of conduct rules, and licensing intermediaries.
+                </p>
+
+                <div className="space-y-1.5 pt-2">
+                  <p className="text-[10px] font-bold text-[#25251F] uppercase tracking-wider">What to Verify on SEBI:</p>
+                  <ul className="space-y-1.5 text-xs text-[#524E42]">
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#258B65] shrink-0 mt-0.5" />
+                      <span><strong>Intermediary Registry:</strong> Check if an advisor holds active RIA (INA...) or RA (INH...) registration.</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#258B65] shrink-0 mt-0.5" />
+                      <span><strong>SCORES Portal:</strong> Inspect investor grievance history and unresolved complaint tallies.</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#258B65] shrink-0 mt-0.5" />
+                      <span><strong>Enforcement Orders:</strong> Confirm if the promoter or advisor is barred from capital markets under PFUTP.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-[#FAF7F0] border border-[#E9E1D1] text-[11px] text-[#777365]">
+                <strong className="text-[#25251F]">Forensic Standard:</strong> SEBI strictly prohibits promising guaranteed returns. Anyone offering "100% fixed profit" is violating Regulation 4 of SEBI PFUTP.
+              </div>
+            </div>
+
+            {/* NSE */}
+            <div className="glass-card bg-[#FFFEFA] border border-[#E9E1D1] p-5 rounded-2xl space-y-4 shadow-warm flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#258B65] bg-[#D8F3E5] border border-[#258B65]/30 px-2 py-0.5 rounded">
+                    Tier 1 · Primary Exchange
+                  </span>
+                  <a
+                    href="https://www.nseindia.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-[11px] text-[#258B65] hover:underline"
+                  >
+                    nseindia.com <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+                <h3 className="text-base font-bold text-[#25251F] tracking-tight">
+                  Source 2: NSE India (National Stock Exchange)
+                </h3>
+                <p className="text-xs text-[#777365] leading-relaxed">
+                  India's leading equity and derivatives exchange, publishing legal company announcements and audited quarterly financial returns.
+                </p>
+
+                <div className="space-y-1.5 pt-2">
+                  <p className="text-[10px] font-bold text-[#25251F] uppercase tracking-wider">What to Verify on NSE:</p>
+                  <ul className="space-y-1.5 text-xs text-[#524E42]">
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#258B65] shrink-0 mt-0.5" />
+                      <span><strong>Regulation 30 LODR:</strong> Material contracts, mergers, and order wins filed within 24 hours.</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#258B65] shrink-0 mt-0.5" />
+                      <span><strong>Financial Statements:</strong> Revenue, EBITDA, and Net Profit audited quarterly filings.</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#258B65] shrink-0 mt-0.5" />
+                      <span><strong>Insider Trading (PIT):</strong> Disclosures tracking whether company promoters are buying or selling shares.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-[#FAF7F0] border border-[#E9E1D1] text-[11px] text-[#777365]">
+                <strong className="text-[#25251F]">Forensic Standard:</strong> If a viral video claims a company signed a massive contract, check the signed company secretary letter on NSE before investing.
+              </div>
+            </div>
+
+            {/* BSE */}
+            <div className="glass-card bg-[#FFFEFA] border border-[#E9E1D1] p-5 rounded-2xl space-y-4 shadow-warm flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#258B65] bg-[#D8F3E5] border border-[#258B65]/30 px-2 py-0.5 rounded">
+                    Tier 1 · Primary Exchange
+                  </span>
+                  <a
+                    href="https://www.bseindia.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-[11px] text-[#258B65] hover:underline"
+                  >
+                    bseindia.com <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+                <h3 className="text-base font-bold text-[#25251F] tracking-tight">
+                  Source 3: BSE India (Bombay Stock Exchange)
+                </h3>
+                <p className="text-xs text-[#777365] leading-relaxed">
+                  Asia's first stock exchange with the deepest universe of listed companies, specializing in corporate actions and surveillance frameworks.
+                </p>
+
+                <div className="space-y-1.5 pt-2">
+                  <p className="text-[10px] font-bold text-[#25251F] uppercase tracking-wider">What to Verify on BSE:</p>
+                  <ul className="space-y-1.5 text-xs text-[#524E42]">
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#258B65] shrink-0 mt-0.5" />
+                      <span><strong>ASM &amp; GSM Lists:</strong> Additional &amp; Graded Surveillance Measures flagging manipulated penny stocks.</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#258B65] shrink-0 mt-0.5" />
+                      <span><strong>Shareholding Patterns:</strong> Promoter share pledges, institutional holding, and public free-float.</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#258B65] shrink-0 mt-0.5" />
+                      <span><strong>Scrip Surveillance:</strong> Circuit limits (2%, 5%, 10%) indicating regulatory risk bands.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-[#FAF7F0] border border-[#E9E1D1] text-[11px] text-[#777365]">
+                <strong className="text-[#25251F]">Forensic Standard:</strong> Always cross-reference hyped micro-cap recommendations against BSE ASM/GSM lists to prevent liquidity lock-in.
+              </div>
+            </div>
+
+            {/* Moneycontrol */}
+            <div className="glass-card bg-[#FFFEFA] border border-[#E9E1D1] p-5 rounded-2xl space-y-4 shadow-warm flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#A88032] bg-[#FDF0D5] border border-[#D49A32]/30 px-2 py-0.5 rounded">
+                    Tier 2 · Secondary Media
+                  </span>
+                  <a
+                    href="https://www.moneycontrol.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-[11px] text-[#A88032] hover:underline"
+                  >
+                    moneycontrol.com <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+                <h3 className="text-base font-bold text-[#25251F] tracking-tight">
+                  Source 4: Moneycontrol &amp; Financial Journalism
+                </h3>
+                <p className="text-xs text-[#777365] leading-relaxed">
+                  Leading financial news portal providing essential sector context, management interview transcripts, and institutional brokerage consensus.
+                </p>
+
+                <div className="space-y-1.5 pt-2">
+                  <p className="text-[10px] font-bold text-[#25251F] uppercase tracking-wider">What to Verify on Moneycontrol:</p>
+                  <ul className="space-y-1.5 text-xs text-[#524E42]">
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#258B65] shrink-0 mt-0.5" />
+                      <span><strong>Earnings Call Transcripts:</strong> Direct management remarks on margin guidance and capex.</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#258B65] shrink-0 mt-0.5" />
+                      <span><strong>Brokerage Consensus:</strong> Professional targets from registered institutions vs. influencer hype.</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#258B65] shrink-0 mt-0.5" />
+                      <span><strong>Sponsored Content Detection:</strong> Distinguishing between paid PR stories and investigative news.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-[#FAF7F0] border border-[#E9E1D1] text-[11px] text-[#777365]">
+                <strong className="text-[#25251F]">Forensic Standard:</strong> Financial journalism offers helpful context, but treat it as secondary evidence until matched by an official filing.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ═══════════════════════════════════════════
           TAB 1 — EDUCATION ARTICLES

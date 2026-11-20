@@ -167,6 +167,91 @@ By diversifying across 20–30 uncorrelated securities, idiosyncratic risk is re
     officialSource: "Markowitz Modern Portfolio Theory / SEBI Mutual Fund Categorization Guidelines",
     regulatorySection: "SEBI/HO/IMD/DF3/CIR/P/2017/114",
   },
+  {
+    id: "art-06",
+    title: "How to Verify Company Disclosures on NSE India: A Retail Due Diligence Guide",
+    excerpt: "Learn how to access, read, and audit official listed company filings on the National Stock Exchange (NSE) to verify viral corporate rumors and contract claims.",
+    fullContent: `
+### Why NSE Disclosures Are Tier-1 Primary Evidence
+Under the SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2015, listed Indian corporations are legally mandated to report any material event or price-sensitive information to stock exchanges **within 24 hours** (or 30 minutes for board meeting decisions).
+
+When a social media influencer announces: *"Company X just secured a ₹5,000 Crore solar contract, buy before upper circuit!"*, that event MUST be submitted as an official PDF circular on NSE India under **Regulation 30 (LODR)**.
+
+### How to Check Filings on NSE India (nseindia.com)
+1. **Corporate Announcements Portal:** Navigate to \`nseindia.com\` > *Companies* > *Corporate Filings* > *Announcements*.
+2. **Search by Symbol:** Enter the company's official NSE ticker (e.g. \`RELIANCE\`, \`TCS\`, \`INFY\`).
+3. **Verify Date & Timestamp:** Check if the signed company secretary (CS) letterhead matches the timing of the social media rumor.
+4. **Inspect Materiality:** If the rumor claims a multi-crore deal but no submission exists, or the company filed an explicit clarification stating *"We have no knowledge of any undisclosed event"*, the claim is unsubstantiated.
+
+### Key Disclosure Types to Review
+- **Board Meeting Outcomes:** Financial results, dividend declarations, bonus shares, rights issues.
+- **Insider Trading (PIT / SAST):** Disclosures showing whether company promoters and executives are buying or selling shares.
+- **Bulk & Block Deals:** Large institutional order transactions executed on the exchange window.
+    `,
+    category: "Due Diligence",
+    readTime: 8,
+    difficulty: "beginner",
+    publishedAt: "2024-11-15",
+    tags: ["NSE India", "Corporate Filings", "LODR Reg 30", "Due Diligence"],
+    officialSource: "NSE India (nseindia.com) / SEBI (LODR) Regulations, 2015",
+    regulatorySection: "Regulation 30, SEBI LODR Regulations",
+  },
+  {
+    id: "art-07",
+    title: "BSE Surveillance Measures (ASM & GSM): Spotting Manipulated Micro-Caps",
+    excerpt: "Understand how the Bombay Stock Exchange (BSE) monitors abnormal price spikes, and how to check if a hyped stock is under Additional or Graded Surveillance.",
+    fullContent: `
+### What Are ASM and GSM Surveillance Frameworks?
+SEBI and exchanges like BSE India implemented the **Additional Surveillance Measure (ASM)** and **Graded Surveillance Measure (GSM)** to protect retail investors from pump-and-dump operations and speculative trading traps.
+
+When illiquid penny stocks experience unusual price volatility, concentrated client trading, or sudden volume spikes without fundamental operational earnings, BSE places the scrip into surveillance stages.
+
+### The Stages of Surveillance on BSE India (bseindia.com)
+1. **Short-Term ASM:** Imposes 100% margin requirements and narrows price circuit bands to prevent intraday speculation.
+2. **Long-Term ASM (Stages 1 to 4):**
+   - **Stage 1:** Applicable margin becomes 100%.
+   - **Stage 2:** Settlement on Gross basis; 100% margin.
+   - **Stage 3:** Price band restricted to 5% with daily price caps.
+   - **Stage 4:** Maximum price movement capped at 2% with mandatory settlement holding.
+3. **GSM (Stages 1 to 6):** For micro-caps with severe financial divergence (negative net worth or zero revenue). In higher stages, trading is allowed only on the first day of the week, and buyers must deposit an additional **50% to 100% Additional Surveillance Deposit (ASD)**.
+
+### Practical Investor Due Diligence Rule
+If an online channel promotes a *"secret 10x multibagger"*, search the company's scrip code on \`bseindia.com\`. If it displays the **ASM** or **GSM** indicator tag, institutional smart money is restricted from buying, and retail investors face severe liquidity lock-in.
+    `,
+    category: "Regulation",
+    readTime: 10,
+    difficulty: "intermediate",
+    publishedAt: "2024-11-18",
+    tags: ["BSE India", "ASM", "GSM", "Surveillance", "Circuit Filters"],
+    officialSource: "BSE India (bseindia.com) / Joint Exchange Surveillance Committee",
+    regulatorySection: "BSE Notice No. 20180321-27",
+  },
+  {
+    id: "art-08",
+    title: "Evaluating Financial News & Media: Primary Filings vs. Secondary Journalism",
+    excerpt: "Learn how to use portals like Moneycontrol effectively for context and earnings analysis, while understanding why news reports must be verified against primary exchange filings.",
+    fullContent: `
+### Understanding Evidence Tiers: Tier-1 vs. Tier-2
+In professional forensic financial research, information is strictly classified into credibility tiers:
+
+- **Tier-1 Primary Evidence:** Official regulatory filings directly submitted by the company or statutory authorities (SEBI circulars, NSE announcements, BSE disclosures). These carry statutory legal liability for false statements.
+- **Tier-2 Secondary Evidence:** Respected financial journalism, articles, commentary, and news portals (Moneycontrol, Economic Times, Reuters). These provide valuable sector context, management interviews, and analyst consensus, but do not constitute official exchange disclosures.
+- **Tier-3 Unverified Information:** Anonymous Telegram messages, YouTube video descriptions, WhatsApp forwards, and unverified social media posts.
+
+### How to Use Moneycontrol for Intelligent Due Diligence
+1. **Earnings Transcripts & Call Highlights:** Review quarterly conference call transcripts to hear management commentary on debt, margin guidance, and capital expenditures.
+2. **Brokerage Consensus vs Hype:** Compare a viral target price against consensus price targets from SEBI-registered institutional brokerages published on Moneycontrol.
+3. **Spotting Sponsored Content:** Be vigilant for *"Brand Stories"* or promotional corporate profiles that mimic editorial reporting but are sponsored PR placements.
+4. **Cross-Confirmation Rule:** If Moneycontrol reports that a company is in merger talks, treat it as market context until an official confirmation or denial is filed on the NSE or BSE portal.
+    `,
+    category: "Due Diligence",
+    readTime: 7,
+    difficulty: "beginner",
+    publishedAt: "2024-11-20",
+    tags: ["Moneycontrol", "Financial Journalism", "Media Verification", "Due Diligence"],
+    officialSource: "Press Council / Financial Market Research Due Diligence Standards",
+    regulatorySection: "Forensic Evidence Hierarchy Framework",
+  },
 ];
 
 // ---------------------------------------------------------------------------
