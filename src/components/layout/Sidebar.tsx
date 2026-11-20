@@ -102,26 +102,36 @@ export default function Sidebar({
 
   const displayName = userEmail ? userEmail.split("@")[0] : "Analyst Account";
   const initials = displayName.slice(0, 2).toUpperCase();
+  const collapsed = isCollapsed && !isMobile;
 
   return (
     <aside
       className={`h-full flex flex-col justify-between bg-[#F1EBDD]/95 backdrop-blur-2xl border-r border-[#E9E1D1] select-none transition-all duration-300 ${
-        isCollapsed && !isMobile ? "w-20" : "w-64"
+        collapsed ? "w-20" : "w-64"
       }`}
     >
       {/* Top Brand Section */}
       <div>
-        <div className="p-4 border-b border-[#E9E1D1] flex items-center justify-between">
+        <div
+          className={`border-b border-[#E9E1D1] ${
+            collapsed
+              ? "py-3 px-2 flex flex-col items-center gap-2"
+              : "p-4 flex items-center justify-between"
+          }`}
+        >
           <Link
             to="/dashboard"
             onClick={onCloseMobile}
-            className="flex items-center gap-3 group overflow-hidden"
+            className={`flex items-center gap-3 group overflow-hidden ${
+              collapsed ? "justify-center" : ""
+            }`}
+            title="FINTRUST AI — Dashboard"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-champagne flex items-center justify-center shadow-gold-glow shrink-0 border border-[#C49A45]/30">
               <ShieldCheck className="w-5 h-5 text-[#25251F]" />
             </div>
 
-            {(!isCollapsed || isMobile) && (
+            {!collapsed && (
               <div className="flex flex-col min-w-0">
                 <span className="font-extrabold text-base tracking-tight text-[#25251F] flex items-center gap-1.5">
                   FINTRUST <span className="text-[#A88032] font-black">AI</span>
@@ -148,10 +158,13 @@ export default function Sidebar({
           {!isMobile && onToggleCollapse && (
             <button
               onClick={onToggleCollapse}
-              className="hidden lg:flex p-1.5 rounded-xl text-[#777365] hover:text-[#25251F] hover:bg-[#FAF7F0] transition-colors cursor-pointer"
-              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              className={`rounded-xl text-[#777365] hover:text-[#25251F] hover:bg-[#FAF7F0] transition-colors cursor-pointer hidden lg:flex items-center justify-center ${
+                collapsed ? "p-1.5 w-7 h-7" : "p-1.5"
+              }`}
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
-              {isCollapsed ? (
+              {collapsed ? (
                 <ChevronRight className="w-4 h-4 text-[#C49A45]" />
               ) : (
                 <ChevronLeft className="w-4 h-4" />
@@ -161,13 +174,15 @@ export default function Sidebar({
         </div>
 
         {/* Navigation Menu Sections */}
-        <nav className="p-3 space-y-3">
+        <nav className={`space-y-3 ${collapsed ? "py-3 px-2" : "p-3"}`}>
           {navSections.map((section, idx) => (
-            <div key={section.title} className="space-y-1">
-              {(!isCollapsed || isMobile) && (
-                <p className="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-[#A39E8F] select-none">
+            <div key={section.title} className="space-y-1.5">
+              {!collapsed ? (
+                <p className="px-3 pt-1 pb-0.5 text-[10px] font-bold uppercase tracking-wider text-[#A39E8F] select-none">
                   {section.title}
                 </p>
+              ) : (
+                idx > 0 && <div className="w-6 h-px bg-[#E9E1D1] mx-auto my-2" />
               )}
               {section.items.map((item) => {
                 const isActive = location.pathname === item.path;
@@ -178,24 +193,30 @@ export default function Sidebar({
                     key={item.path}
                     to={item.path}
                     onClick={onCloseMobile}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group relative ${
+                    className={`flex items-center rounded-xl text-xs font-semibold transition-all group relative ${
+                      collapsed
+                        ? "w-11 h-11 justify-center mx-auto"
+                        : "gap-3 px-3 py-2.5"
+                    } ${
                       isActive
                         ? "bg-gradient-champagne text-[#25251F] shadow-sm font-bold border border-[#C49A45]/40"
                         : "text-[#777365] hover:text-[#25251F] hover:bg-[#FAF7F0]"
                     }`}
-                    title={isCollapsed && !isMobile ? item.label : undefined}
+                    title={collapsed ? item.label : undefined}
                   >
                     <Icon
-                      className={`w-4 h-4 shrink-0 transition-colors ${
+                      className={`shrink-0 transition-colors ${
+                        collapsed ? "w-5 h-5" : "w-4 h-4"
+                      } ${
                         isActive ? "text-[#25251F]" : "text-[#777365] group-hover:text-[#25251F]"
                       }`}
                     />
 
-                    {(!isCollapsed || isMobile) && (
+                    {!collapsed && (
                       <span className="truncate flex-1">{item.label}</span>
                     )}
 
-                    {(!isCollapsed || isMobile) && item.badge && (
+                    {!collapsed && item.badge && (
                       <span
                         className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md border shrink-0 ${item.badgeColor}`}
                       >
@@ -203,7 +224,7 @@ export default function Sidebar({
                       </span>
                     )}
 
-                    {isActive && (
+                    {isActive && !collapsed && (
                       <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-[#C49A45]" />
                     )}
                   </Link>
@@ -215,8 +236,8 @@ export default function Sidebar({
       </div>
 
       {/* Bottom User & Safeguards Section */}
-      <div className="p-3 border-t border-[#E9E1D1] space-y-2.5 mt-auto">
-        {(!isCollapsed || isMobile) && (
+      <div className={`border-t border-[#E9E1D1] mt-auto ${collapsed ? "p-2 space-y-2" : "p-3 space-y-2.5"}`}>
+        {!collapsed && (
           <div className="p-2.5 rounded-xl bg-[#FFFEFA] border border-[#E9E1D1] space-y-1 shadow-sm">
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#258B65]" />
@@ -231,16 +252,31 @@ export default function Sidebar({
         )}
 
         {/* User Profile Card */}
-        <div
-          className={`p-2 rounded-xl bg-[#FFFEFA] border border-[#E9E1D1] flex items-center shadow-sm ${
-            isCollapsed && !isMobile ? "justify-center" : "justify-between"
-          }`}
-        >
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-gradient-champagne flex items-center justify-center font-bold text-xs text-[#25251F] shadow-sm shrink-0 border border-[#C49A45]/30">
+        {collapsed ? (
+          <div className="flex flex-col items-center gap-1.5 py-1">
+            <div
+              className="w-10 h-10 rounded-xl bg-gradient-champagne flex items-center justify-center font-bold text-xs text-[#25251F] shadow-sm border border-[#C49A45]/30 cursor-pointer"
+              title={`${displayName} (${userEmail || "guest"})`}
+            >
               {initials}
             </div>
-            {(!isCollapsed || isMobile) && (
+            <Link
+              to="/login"
+              title="Sign out"
+              onClick={async () => {
+                await supabase.auth.signOut();
+              }}
+              className="w-7 h-7 flex items-center justify-center rounded-lg text-[#777365] hover:text-[#D95353] hover:bg-[#FDE8E8] transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        ) : (
+          <div className="p-2 rounded-xl bg-[#FFFEFA] border border-[#E9E1D1] flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-lg bg-gradient-champagne flex items-center justify-center font-bold text-xs text-[#25251F] shadow-sm shrink-0 border border-[#C49A45]/30">
+                {initials}
+              </div>
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-[#25251F] truncate capitalize">
                   {displayName}
@@ -249,10 +285,8 @@ export default function Sidebar({
                   {userEmail || "guest@fintrust.ai"}
                 </p>
               </div>
-            )}
-          </div>
+            </div>
 
-          {(!isCollapsed || isMobile) && (
             <Link
               to="/login"
               title="Sign out"
@@ -263,8 +297,8 @@ export default function Sidebar({
             >
               <LogOut className="w-3.5 h-3.5" />
             </Link>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </aside>
   );
