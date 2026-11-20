@@ -106,23 +106,36 @@ export default function RegisterPage() {
           </div>
 
           {/* Brand & Header */}
-          <div className="flex flex-col items-center text-center space-y-3.5">
-            <Link to="/dashboard" className="flex items-center gap-3.5 group">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-champagne flex items-center justify-center shadow-gold-glow border border-[#C49A45]/40 shrink-0 transition-transform group-hover:scale-105">
-                <ShieldCheck className="w-8 h-8 sm:w-9 sm:h-9 text-[#25251F]" />
+          <div className="flex flex-col items-center text-center space-y-4">
+            {/* Giant Logo */}
+            <Link to="/dashboard" className="flex flex-col items-center gap-3 group">
+              {/* Glowing logo ring */}
+              <div className="relative">
+                <div className="absolute -inset-2 rounded-3xl bg-gradient-to-br from-[#C49A45]/40 via-[#E4C477]/50 to-[#D6A94F]/40 blur-xl opacity-80 group-hover:opacity-100 transition-opacity" />
+                <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-br from-[#C49A45] via-[#D6A94F] to-[#A87B2A] flex items-center justify-center shadow-[0_8px_32px_rgba(196,154,69,0.45)] border-2 border-[#E4C477]/60 transition-transform group-hover:scale-105">
+                  <ShieldCheck className="w-12 h-12 sm:w-14 sm:h-14 text-white drop-shadow-md" />
+                </div>
               </div>
-              <div className="text-left">
-                <span className="font-black text-2xl sm:text-3xl tracking-tight text-[#25251F] block leading-none">
-                  FINTRUST <span className="gradient-text font-black">AI</span>
+
+              {/* Brand Name */}
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="font-black text-4xl sm:text-5xl tracking-tight text-[#25251F] leading-none">
+                  FINTRUST{" "}
+                  <span className="bg-gradient-to-r from-[#C49A45] via-[#E4C477] to-[#A87B2A] bg-clip-text text-transparent font-black">
+                    AI
+                  </span>
                 </span>
-                <span className="text-xs sm:text-sm text-[#777365] font-medium leading-none mt-1.5 block">
+                <span className="text-sm text-[#9E8B6A] font-semibold tracking-widest uppercase mt-1">
                   Clarity before conviction.
                 </span>
               </div>
             </Link>
 
+            {/* Divider */}
+            <div className="w-16 h-px bg-gradient-to-r from-transparent via-[#C49A45]/50 to-transparent" />
+
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#25251F] tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-[#25251F] tracking-tight">
                 Create Analyst Account
               </h1>
               <p className="text-xs sm:text-sm text-[#777365] mt-1 max-w-sm mx-auto">
@@ -140,9 +153,9 @@ export default function RegisterPage() {
               ].map((s) => (
                 <span
                   key={s.name}
-                  className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FAF7F0] border border-[#E9E1D1] text-[#777365]"
+                  className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#FAF7F0] border border-[#E9E1D1] text-[#777365]"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#258B65]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#258B65] animate-pulse" />
                   <span>{s.name}</span>
                 </span>
               ))}
