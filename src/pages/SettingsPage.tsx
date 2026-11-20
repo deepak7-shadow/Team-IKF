@@ -2,10 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   User,
   Bell,
-  Shield,
-  Key,
   Save,
-  Database,
   Camera,
   Lock,
   Mail,
@@ -14,8 +11,6 @@ import {
   AlertCircle,
   CheckCircle2,
   LogOut,
-  Smartphone,
-  Copy,
 } from "lucide-react";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
@@ -23,7 +18,7 @@ import { Badge } from "../components/ui/Badge";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { useNavigate } from "react-router-dom";
 
-type TabId = "profile" | "alerts" | "api" | "security";
+type TabId = "profile" | "alerts";
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -52,10 +47,6 @@ export default function SettingsPage() {
   const [sebiAlerts, setSebiAlerts] = useState(true);
   const [pumpDumpDetection, setPumpDumpDetection] = useState(true);
   const [emailDigest, setEmailDigest] = useState(false);
-
-  /* ── API key reveal ── */
-  const [apiKeyVisible, setApiKeyVisible] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   /* ── Load session ── */
   const loadUser = useCallback(async () => {
@@ -139,13 +130,6 @@ export default function SettingsPage() {
     navigate("/login");
   };
 
-  /* ── Copy placeholder API key ── */
-  const handleCopyKey = () => {
-    navigator.clipboard.writeText("fnt_live_98a7bc62d149023ef74910284ab9").catch(() => {});
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   const passwordStrength = (p: string) => {
     let s = 0;
     if (p.length >= 8) s++;
@@ -161,8 +145,6 @@ export default function SettingsPage() {
   const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
     { id: "profile", label: "Profile & Account", icon: User },
     { id: "alerts", label: "Audit Sensitivity", icon: Bell },
-    { id: "api", label: "API & Supabase", icon: Key },
-    { id: "security", label: "Security & 2FA", icon: Shield },
   ];
 
   return (
@@ -170,10 +152,10 @@ export default function SettingsPage() {
       {/* Header */}
       <div className="border-b border-[#E9E1D1] pb-5">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#25251F] tracking-tight">
-          Platform Settings &amp; Integrations
+          Platform Settings
         </h1>
         <p className="text-xs sm:text-sm text-[#777365]">
-          Manage your profile, audit sensitivity, API credentials, and account security.
+          Manage your profile, password security, and audit sensitivity preferences.
         </p>
       </div>
 
@@ -381,129 +363,6 @@ export default function SettingsPage() {
                 </button>
               </div>
             ))}
-          </div>
-        </Card>
-      )}
-
-      {/* ══════════════════════════════════════
-          TAB 3: API & SUPABASE
-      ══════════════════════════════════════ */}
-      {activeTab === "api" && (
-        <Card className="p-6 space-y-5 border-[#E9E1D1]">
-          <h3 className="text-base font-bold text-[#25251F] tracking-tight">Database &amp; Connector Status</h3>
-
-          {/* Supabase status */}
-          <div className="p-4 rounded-xl bg-[#FAF7F0] border border-[#E9E1D1] flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Database className="w-5 h-5 text-[#C49A45]" />
-              <div>
-                <p className="text-xs font-bold text-[#25251F]">Supabase Live Database</p>
-                <p className="text-[11px] text-[#777365]">
-                  {isSupabaseConfigured()
-                    ? `Connected · User ID: ${userId?.slice(0, 8)}…`
-                    : "Not configured — add VITE_SUPABASE_URL & VITE_SUPABASE_ANON_KEY to .env"}
-                </p>
-              </div>
-            </div>
-            <Badge variant={isSupabaseConfigured() ? "success" : "neutral"} size="sm">
-              {isSupabaseConfigured() ? "CONNECTED" : "STANDBY"}
-            </Badge>
-          </div>
-
-          {/* Backend API endpoint */}
-          <div className="p-4 rounded-xl bg-[#FAF7F0] border border-[#E9E1D1] space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-bold text-[#25251F]">FastAPI Backend</p>
-                <p className="text-[11px] text-[#777365]">http://127.0.0.1:8000</p>
-              </div>
-              <Badge variant="success" size="sm" dot>ACTIVE</Badge>
-            </div>
-            <p className="text-[10px] text-[#777365]">
-              Endpoints: /api/v1/claims · /api/v1/influencers · /api/v1/predictions
-            </p>
-          </div>
-
-          {/* API Key */}
-          <div className="space-y-2">
-            <h4 className="text-xs font-bold text-[#25251F] uppercase tracking-wider">Platform API Key</h4>
-            <div className="p-4 rounded-xl bg-[#FAF7F0] border border-[#E9E1D1] space-y-2">
-              <p className="text-[11px] font-bold text-[#A88032] uppercase tracking-wider">Production API Secret Key</p>
-              <div className="flex items-center gap-2">
-                <input
-                  type={apiKeyVisible ? "text" : "password"}
-                  readOnly
-                  value="fnt_live_98a7bc62d149023ef74910284ab9"
-                  className="input-glass font-mono text-xs flex-1"
-                />
-                <Button variant="secondary" size="sm" onClick={() => setApiKeyVisible(!apiKeyVisible)}>
-                  {apiKeyVisible ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                </Button>
-                <Button variant="primary" size="sm" onClick={handleCopyKey}>
-                  {copied ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                  {copied ? "Copied!" : "Copy"}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Card>
-      )}
-
-      {/* ══════════════════════════════════════
-          TAB 4: SECURITY & 2FA
-      ══════════════════════════════════════ */}
-      {activeTab === "security" && (
-        <Card className="p-6 space-y-5 border-[#E9E1D1]">
-          <h3 className="text-base font-bold text-[#25251F] tracking-tight">Account Security</h3>
-
-          {/* Account info */}
-          <div className="p-4 rounded-xl bg-[#FAF7F0] border border-[#E9E1D1] space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-[#C49A45]" />
-                <div>
-                  <p className="text-xs font-bold text-[#25251F]">Registered Email</p>
-                  <p className="text-[11px] text-[#777365] font-mono">{userEmail || "Not signed in"}</p>
-                </div>
-              </div>
-              <Badge variant="success" size="sm">VERIFIED</Badge>
-            </div>
-          </div>
-
-          {/* 2FA */}
-          <div className="p-4 rounded-xl bg-[#FAF7F0] border border-[#E9E1D1] flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Smartphone className="w-5 h-5 text-[#C49A45]" />
-              <div>
-                <p className="text-xs font-bold text-[#25251F]">Two-Factor Authentication (TOTP)</p>
-                <p className="text-[11px] text-[#777365]">Managed via Supabase Auth MFA settings.</p>
-              </div>
-            </div>
-            <Badge variant="neutral" size="sm">AVAILABLE</Badge>
-          </div>
-
-          {/* RLS note */}
-          <div className="p-4 rounded-xl bg-[#D8F3E5] border border-[#258B65]/30 flex items-start gap-3">
-            <CheckCircle2 className="w-4 h-4 text-[#258B65] shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-xs font-bold text-[#258B65]">Row-Level Security Enabled</p>
-              <p className="text-[11px] text-[#777365] leading-relaxed">
-                All database tables are protected by Supabase RLS policies. Users can only read and write their own records.
-                Claims, predictions, saved reports, and influencer records are isolated per authenticated user.
-              </p>
-            </div>
-          </div>
-
-          {/* Sign out */}
-          <div className="flex justify-between items-center pt-2 border-t border-[#E9E1D1]">
-            <div>
-              <p className="text-xs font-bold text-[#D95353]">Danger Zone</p>
-              <p className="text-[11px] text-[#777365]">Sign out from all devices by ending your Supabase session.</p>
-            </div>
-            <Button variant="outline" size="sm" onClick={handleLogout} className="text-[#D95353] border-[#D95353]/40 hover:bg-[#FDE8E8]">
-              <LogOut className="w-3.5 h-3.5 mr-1.5" />
-              Sign Out
-            </Button>
           </div>
         </Card>
       )}
