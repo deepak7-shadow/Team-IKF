@@ -22,6 +22,9 @@ import {
   Zap,
   Eye,
   WifiOff,
+  Globe,
+  Database,
+  Layers,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card } from "../components/ui/Card";
@@ -594,7 +597,7 @@ export default function ClaimAnalyzerPage() {
             <span className="px-2.5 py-0.5 rounded text-[10px] font-bold bg-[#F5EEDB] text-[#9E7828] border border-[#C49A45]/35">
               AI CLAIM AUDITOR
             </span>
-            <span className="text-xs text-[#777365]">SEBI Compliance &amp; Risk Engine</span>
+            <span className="text-xs text-[#777365]">Multi-Source Intelligence &amp; SEBI Compliance</span>
             {backendStatus.checked && (
               <span
                 className={`flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full border ${
@@ -678,6 +681,37 @@ export default function ClaimAnalyzerPage() {
       {flowState === "submission" && (
         <div className="space-y-5">
           <Card className="p-6 space-y-5 border-[#E9E1D1]">
+            {/* Multi-Source Intelligence Active Bar */}
+            <div className="p-3.5 rounded-xl bg-[#FAF7F0] border border-[#E9E1D1] space-y-2">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <span className="text-[11px] font-bold text-[#25251F] uppercase tracking-wider flex items-center gap-1.5">
+                  <Database className="w-3.5 h-3.5 text-[#C49A45]" />
+                  Active 4-Source Verification Engine
+                </span>
+                <span className="text-[10px] text-[#258B65] font-semibold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#258B65] animate-pulse" />
+                  Exchange &amp; Regulatory Feeds Active
+                </span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {[
+                  { name: "SEBI", desc: "Circulars & Orders", type: "Tier 1 Regulatory" },
+                  { name: "NSE India", desc: "Corporate Filings", type: "Tier 1 Exchange" },
+                  { name: "BSE India", desc: "Company Disclosures", type: "Tier 1 Exchange" },
+                  { name: "Moneycontrol", desc: "Financial Journalism", type: "Tier 2 Context" },
+                ].map((s) => (
+                  <div key={s.name} className="p-2 rounded-lg bg-[#FFFEFA] border border-[#E9E1D1] shadow-2xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-[#25251F]">{s.name}</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#258B65]" />
+                    </div>
+                    <p className="text-[10px] text-[#777365] truncate mt-0.5">{s.desc}</p>
+                    <span className="text-[9px] font-medium text-[#C49A45]">{s.type}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Claim text */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-[#25251F] uppercase tracking-wider flex items-center justify-between">
@@ -757,8 +791,8 @@ export default function ClaimAnalyzerPage() {
             {/* Submit row */}
             <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2 text-xs text-[#777365]">
-                <ShieldCheck className="w-4 h-4 text-[#C49A45]" />
-                <span>Audited against SEBI RIA / RA disclosure standards</span>
+                <ShieldCheck className="w-4 h-4 text-[#C49A45] shrink-0" />
+                <span>Cross-verified across SEBI, NSE, BSE &amp; Moneycontrol</span>
               </div>
               <Button
                 variant="primary"
