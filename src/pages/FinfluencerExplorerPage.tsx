@@ -373,11 +373,11 @@ export default function FinfluencerExplorerPage() {
 
               {/* Profile Header */}
               <div className="flex items-start justify-between gap-3 relative z-10">
-                <div className="flex items-center gap-3 min-w-0">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div className="w-12 h-12 rounded-2xl bg-gradient-champagne flex items-center justify-center font-extrabold text-base text-[#25251F] shadow-sm shrink-0 border border-[#C49A45]/30">
                     {inf.name.charAt(0)}
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
                       <h3 className="text-sm font-bold text-[#25251F] truncate group-hover:text-[#A88032] transition-colors">
                         {inf.name}
@@ -390,8 +390,8 @@ export default function FinfluencerExplorerPage() {
                         <HelpCircle className="w-4 h-4 text-[#777365] shrink-0" />
                       )}
                     </div>
-                    <p className="text-xs text-[#777365] font-mono">{inf.handle}</p>
-                    <p className="text-[11px] text-[#9E9988] mt-0.5">
+                    <p className="text-xs text-[#777365] font-mono truncate">{inf.handle}</p>
+                    <p className="text-[11px] text-[#9E9988] mt-0.5 truncate">
                       {inf.platform} • {formatNumber(inf.followers)} followers
                     </p>
                   </div>
@@ -406,6 +406,7 @@ export default function FinfluencerExplorerPage() {
                       : "danger"
                   }
                   size="sm"
+                  className="whitespace-nowrap shrink-0 font-bold"
                 >
                   {inf.risk_rating.toUpperCase()} RISK
                 </Badge>
@@ -488,6 +489,7 @@ export default function FinfluencerExplorerPage() {
           description={`${selectedInfluencer.handle} • ${selectedInfluencer.platform} • ${formatNumber(
             selectedInfluencer.followers
           )} followers`}
+          maxWidth="2xl"
         >
           <div className="space-y-5 text-[#25251F]">
             {/* Modal Navigation Tabs */}

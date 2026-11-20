@@ -44,39 +44,45 @@ export function Modal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-hidden">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-[#25251F]/40 backdrop-blur-sm transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-[#25251F]/50 backdrop-blur-sm transition-opacity animate-fade-in"
         onClick={onClose}
       />
 
       {/* Modal Box */}
       <div
         className={cn(
-          "relative w-full rounded-2xl bg-[#FFFEFA] border border-[#E9E1D1] p-6 sm:p-8 shadow-2xl z-10 animate-slide-up text-[#25251F]",
+          "relative w-full max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3.5rem)] flex flex-col rounded-2xl bg-[#FFFEFA] border border-[#E9E1D1] shadow-2xl z-10 animate-slide-up text-[#25251F] overflow-hidden",
           maxWidthStyles[maxWidth]
         )}
       >
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 p-1.5 rounded-lg text-[#777365] hover:text-[#25251F] hover:bg-[#F1EBDD] transition-colors cursor-pointer"
-        >
-          <X className="w-4 h-4" />
-        </button>
-
-        {title && (
-          <div className="mb-4 pr-8">
-            <h3 className="text-lg font-bold text-[#25251F] tracking-tight">
-              {title}
-            </h3>
+        {/* Sticky Header */}
+        <div className="flex items-start justify-between gap-4 p-5 sm:p-6 border-b border-[#E9E1D1] bg-[#FFFEFA] shrink-0">
+          <div className="pr-4 min-w-0">
+            {title && (
+              <h3 className="text-lg sm:text-xl font-bold text-[#25251F] tracking-tight truncate">
+                {title}
+              </h3>
+            )}
             {description && (
-              <p className="text-xs text-[#777365] mt-1">{description}</p>
+              <p className="text-xs text-[#777365] mt-1 line-clamp-2">{description}</p>
             )}
           </div>
-        )}
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-xl text-[#777365] hover:text-[#25251F] hover:bg-[#F1EBDD] transition-colors cursor-pointer shrink-0 border border-transparent hover:border-[#E9E1D1]"
+            aria-label="Close dialog"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
-        <div>{children}</div>
+        {/* Scrollable Body */}
+        <div className="p-5 sm:p-6 overflow-y-auto flex-1 overscroll-contain">
+          {children}
+        </div>
       </div>
     </div>
   );

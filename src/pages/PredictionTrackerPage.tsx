@@ -479,6 +479,7 @@ export default function PredictionTrackerPage() {
           onClose={() => setSelectedPrediction(null)}
           title={`Forecast Audit: ${selectedPrediction.asset} (${selectedPrediction.direction.toUpperCase()})`}
           description={`Logged by ${selectedPrediction.influencer_name} · Deadline: ${selectedPrediction.evaluation_date}`}
+          maxWidth="2xl"
         >
           <div className="space-y-5 text-[#25251F] text-xs">
             {/* Status & Outcome Banner */}
