@@ -44,44 +44,59 @@ export default function Sidebar({
     loadUser();
   }, []);
 
-  const navItems = [
+  const navSections = [
     {
-      label: "Dashboard",
-      path: "/dashboard",
-      icon: LayoutDashboard,
-      badge: null,
+      title: "Core Verification",
+      items: [
+        {
+          label: "Dashboard",
+          path: "/dashboard",
+          icon: LayoutDashboard,
+          badge: null,
+        },
+        {
+          label: "Claim Analyzer",
+          path: "/claim-analyzer",
+          icon: ShieldCheck,
+          badge: "AI Core",
+          badgeColor: "bg-[#F5EEDB] text-[#9E7828] border-[#C49A45]/35",
+        },
+        {
+          label: "Prediction Tracker",
+          path: "/prediction-tracker",
+          icon: TrendingUp,
+          badge: "Live",
+          badgeColor: "bg-[#D8F3E5] text-[#258B65] border-[#258B65]/30",
+        },
+      ],
     },
     {
-      label: "Claim Analyzer",
-      path: "/claim-analyzer",
-      icon: ShieldCheck,
-      badge: "AI Core",
-      badgeColor: "bg-[#F5EEDB] text-[#9E7828] border-[#C49A45]/35",
+      title: "Knowledge & Dossiers",
+      items: [
+        {
+          label: "Investor Education",
+          path: "/investor-education",
+          icon: BookOpen,
+          badge: null,
+        },
+        {
+          label: "Saved Reports",
+          path: "/saved-reports",
+          icon: BookmarkCheck,
+          badge: null,
+        },
+      ],
     },
     {
-      label: "Prediction Tracker",
-      path: "/prediction-tracker",
-      icon: TrendingUp,
-      badge: "Live",
-      badgeColor: "bg-[#D8F3E5] text-[#258B65] border-[#258B65]/30",
-    },
-    {
-      label: "Investor Education",
-      path: "/investor-education",
-      icon: BookOpen,
-      badge: null,
-    },
-    {
-      label: "Saved Reports",
-      path: "/saved-reports",
-      icon: BookmarkCheck,
-      badge: null,
-    },
-    {
-      label: "Settings",
-      path: "/settings",
-      icon: Settings,
-      badge: null,
+      title: "Preferences",
+      items: [
+        {
+          label: "Settings",
+          path: "/settings",
+          icon: Settings,
+          badge: null,
+        },
+      ],
     },
   ];
 
@@ -145,53 +160,76 @@ export default function Sidebar({
           )}
         </div>
 
-        {/* Navigation Menu Links */}
-        <nav className="p-3 space-y-1.5">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            const Icon = item.icon;
+        {/* Navigation Menu Sections */}
+        <nav className="p-3 space-y-3">
+          {navSections.map((section, idx) => (
+            <div key={section.title} className="space-y-1">
+              {(!isCollapsed || isMobile) && (
+                <p className="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-[#A39E8F] select-none">
+                  {section.title}
+                </p>
+              )}
+              {section.items.map((item) => {
+                const isActive = location.pathname === item.path;
+                const Icon = item.icon;
 
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={onCloseMobile}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group relative ${
-                  isActive
-                    ? "bg-gradient-champagne text-[#25251F] shadow-sm font-bold border border-[#C49A45]/40"
-                    : "text-[#777365] hover:text-[#25251F] hover:bg-[#FAF7F0]"
-                }`}
-                title={isCollapsed && !isMobile ? item.label : undefined}
-              >
-                <Icon
-                  className={`w-4 h-4 shrink-0 transition-colors ${
-                    isActive ? "text-[#25251F]" : "text-[#777365] group-hover:text-[#25251F]"
-                  }`}
-                />
-
-                {(!isCollapsed || isMobile) && (
-                  <span className="truncate flex-1">{item.label}</span>
-                )}
-
-                {(!isCollapsed || isMobile) && item.badge && (
-                  <span
-                    className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md border shrink-0 ${item.badgeColor}`}
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={onCloseMobile}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group relative ${
+                      isActive
+                        ? "bg-gradient-champagne text-[#25251F] shadow-sm font-bold border border-[#C49A45]/40"
+                        : "text-[#777365] hover:text-[#25251F] hover:bg-[#FAF7F0]"
+                    }`}
+                    title={isCollapsed && !isMobile ? item.label : undefined}
                   >
-                    {item.badge}
-                  </span>
-                )}
+                    <Icon
+                      className={`w-4 h-4 shrink-0 transition-colors ${
+                        isActive ? "text-[#25251F]" : "text-[#777365] group-hover:text-[#25251F]"
+                      }`}
+                    />
 
-                {isActive && (
-                  <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-[#C49A45]" />
-                )}
-              </Link>
-            );
-          })}
+                    {(!isCollapsed || isMobile) && (
+                      <span className="truncate flex-1">{item.label}</span>
+                    )}
+
+                    {(!isCollapsed || isMobile) && item.badge && (
+                      <span
+                        className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md border shrink-0 ${item.badgeColor}`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+
+                    {isActive && (
+                      <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-[#C49A45]" />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
       </div>
 
-      {/* Bottom User & Status Section */}
-      <div className="p-3 border-t border-[#E9E1D1] space-y-2 mt-auto">
+      {/* Bottom User & Safeguards Section */}
+      <div className="p-3 border-t border-[#E9E1D1] space-y-2.5 mt-auto">
+        {(!isCollapsed || isMobile) && (
+          <div className="p-2.5 rounded-xl bg-[#FFFEFA] border border-[#E9E1D1] space-y-1 shadow-sm">
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#258B65]" />
+              <span className="text-[10px] font-bold text-[#25251F] uppercase tracking-wider">
+                Forensic Guard
+              </span>
+            </div>
+            <p className="text-[10px] text-[#777365] leading-snug">
+              Non-advisory research terminal. Governed by statutory compliance norms.
+            </p>
+          </div>
+        )}
+
         {/* User Profile Card */}
         <div
           className={`p-2 rounded-xl bg-[#FFFEFA] border border-[#E9E1D1] flex items-center shadow-sm ${
