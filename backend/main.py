@@ -62,6 +62,28 @@ from prediction_engine import (
     EvaluationResult,
     EVALUATION_METHODOLOGY_VERSION,
 )
+from intelligence_collector import (
+    collect_multi_source_data,
+    resolve_company_symbol,
+    SourceQueryStatus,
+    CollectedDocument,
+    MultiSourceCollectionResult,
+)
+from evidence_verifier import (
+    verify_multi_source_evidence,
+    VerificationSummary,
+    EvidenceItem,
+)
+from forecasting_engine import (
+    generate_market_outlook,
+    MarketOutlookResult,
+)
+from intelligence_db import (
+    save_intelligence_analysis,
+    get_stored_company_sources,
+    get_stored_company_evidence,
+    get_stored_predictions_history,
+)
 
 # ---------------------------------------------------------------------------
 logging.basicConfig(
@@ -157,6 +179,10 @@ class ClaimReport(BaseModel):
     analysis_duration_ms: Optional[int] = None
     analyzed_at: Optional[str] = None
     ai_engine: str = "gemini-2.0-flash"
+    # Multi-Source Financial Intelligence & Evidence-Based Outlook
+    multi_source_intelligence: Optional[dict[str, Any]] = None
+    evidence_summary: Optional[dict[str, Any]] = None
+    market_outlook: Optional[dict[str, Any]] = None
 
 
 class ClaimListItem(BaseModel):
@@ -221,6 +247,33 @@ async def get_current_user(authorization: Annotated[str | None, Header()] = None
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Authentication service temporarily unavailable.",
         )
+
+
+async def get_optional_user(authorization: Annotated[str | None, Header()] = None) -> Optional[dict]:
+    """
+    Return user dict if valid Bearer token provided, or None if unauthenticated / public.
+    Never throws 401.
+    """
+    if not config.is_supabase_configured() or not authorization or not authorization.startswith("Bearer "):
+        return None
+
+    token = authorization.removeprefix("Bearer ").strip()
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(
+                f"{config.SUPABASE_URL}/auth/v1/user",
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "apikey": config.SUPABASE_SERVICE_ROLE_KEY,
+                },
+                timeout=5.0,
+            )
+        if resp.status_code == 200:
+            user_data = resp.json()
+            return {"id": user_data.get("id"), "email": user_data.get("email")}
+    except Exception:
+        pass
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -406,6 +459,9 @@ def _build_report(raw_data: dict, claim_id: str, user_id: Optional[str]) -> Clai
         analysis_duration_ms=ai.get("_analysis_duration_ms"),
         analyzed_at=raw_data.get("analyzed_at"),
         ai_engine="gemini-2.0-flash" if config.is_gemini_configured() else "rule-based-fallback",
+        multi_source_intelligence=raw_data.get("multi_source_intelligence"),
+        evidence_summary=raw_data.get("evidence_summary"),
+        market_outlook=raw_data.get("market_outlook"),
     )
 
 
@@ -507,6 +563,39 @@ async def submit_claim(
         gemini_api_key=config.GEMINI_API_KEY,
     )
 
+    # --- Multi-Source Financial Intelligence & Evidence Verification ---
+    user_id = current_user.get("id") if current_user else None
+    sec_name = (ai_result.get("security") or ai_result.get("ticker_symbol") or "").strip()
+    if not sec_name:
+        for sym in ["RELIANCE", "TCS", "INFY", "HDFCBANK", "ICICIBANK", "SBIN", "TATAMOTORS", "ITC", "BHARTIARTL", "WIPRO", "LT"]:
+            if sym.lower() in claim_text.lower():
+                sec_name = sym
+                break
+
+    multi_source_payload = None
+    evidence_payload = None
+    outlook_payload = None
+
+    if sec_name:
+        try:
+            coll_res = await collect_multi_source_data(sec_name)
+            ver_res = verify_multi_source_evidence(
+                coll_res.company_symbol, coll_res.company_name, coll_res.documents, claim_text
+            )
+            out_res = generate_market_outlook(
+                coll_res.company_symbol, coll_res.company_name, ver_res
+            )
+
+            multi_source_payload = coll_res.dict()
+            evidence_payload = ver_res.dict()
+            outlook_payload = out_res.dict()
+
+            background_tasks.add_task(
+                save_intelligence_analysis, coll_res, ver_res, out_res, user_id
+            )
+        except Exception as exc:
+            logger.warning("Multi-source intelligence gathering failed: %s", exc)
+
     # --- Build storage payload ---
     raw_data: dict[str, Any] = {
         "id": claim_id,
@@ -523,11 +612,13 @@ async def submit_claim(
         "ai_analysis": ai_result,
         "target_date": target_date or None,
         "upload_filename": saved_filename,
+        "multi_source_intelligence": multi_source_payload,
+        "evidence_summary": evidence_payload,
+        "market_outlook": outlook_payload,
     }
 
     # --- Persist to DB in background ---
     db = _get_supabase()
-    user_id = current_user.get("id") if current_user else None
 
     background_tasks.add_task(_save_claim_to_db, raw_data, user_id, db)
     # Also keep in memory immediately for instant GET
@@ -1204,6 +1295,160 @@ async def get_dashboard_stats(
         has_sufficient_sample=sample_size >= 3,
         sample_size=sample_size,
     )
+
+
+# ---------------------------------------------------------------------------
+# MULTI-SOURCE FINANCIAL INTELLIGENCE & PREDICTION ENGINE ROUTES
+# ---------------------------------------------------------------------------
+
+class IntelligenceAnalyzeRequest(BaseModel):
+    company_or_ticker: str
+    claim_text: Optional[str] = None
+    horizon_days: int = 30
+
+
+class PredictionGenerateRequest(BaseModel):
+    company_or_ticker: str
+    horizon_days: int = 30
+
+
+@app.post("/api/intelligence/analyze")
+async def analyze_company_intelligence(
+    req: IntelligenceAnalyzeRequest,
+    background_tasks: BackgroundTasks,
+    current_user: Optional[dict] = Depends(get_optional_user),
+):
+    """
+    Collect multi-source data from SEBI, NSE, BSE, and Moneycontrol.
+    Deduplicate disclosures, verify evidence authenticity, and run validated forecasting engine.
+    """
+    user_id = current_user.get("id") if current_user else None
+    query = req.company_or_ticker.strip()
+    if not query:
+        raise HTTPException(status_code=400, detail="Company name or stock ticker is required.")
+
+    # 1. Multi-source collection
+    collection = await collect_multi_source_data(query)
+
+    # 2. Evidence verification & cross-exchange deduplication
+    verification = verify_multi_source_evidence(
+        collection.company_symbol,
+        collection.company_name,
+        collection.documents,
+        req.claim_text,
+    )
+
+    # 3. Market outlook generation using real historical prices
+    outlook = generate_market_outlook(
+        collection.company_symbol,
+        collection.company_name,
+        verification,
+        horizon_days=req.horizon_days,
+    )
+
+    # 4. Async persistence to Supabase
+    background_tasks.add_task(
+        save_intelligence_analysis, collection, verification, outlook, user_id
+    )
+
+    return {
+        "company_symbol": collection.company_symbol,
+        "company_name": collection.company_name,
+        "sector": collection.sector,
+        "query_timestamp": collection.query_timestamp,
+        "sources_status": [s.dict() for s in collection.sources_status],
+        "documents": [d.dict() for d in collection.documents],
+        "evidence_summary": verification.dict(),
+        "market_outlook": outlook.dict(),
+    }
+
+
+@app.get("/api/intelligence/sources/{company}")
+async def get_company_sources(company: str):
+    """Retrieve collected documents and sources for a company."""
+    symbol, name, _, _ = resolve_company_symbol(company)
+    docs = get_stored_company_sources(symbol)
+    return {
+        "company_symbol": symbol,
+        "company_name": name,
+        "total_documents": len(docs),
+        "documents": docs,
+    }
+
+
+@app.get("/api/intelligence/evidence/{company}")
+async def get_company_evidence(company: str):
+    """Retrieve classified evidence records for a company."""
+    symbol, name, _, _ = resolve_company_symbol(company)
+    records = get_stored_company_evidence(symbol)
+    return {
+        "company_symbol": symbol,
+        "company_name": name,
+        "total_evidence_records": len(records),
+        "evidence_records": records,
+    }
+
+
+@app.post("/api/predictions/generate")
+async def generate_prediction(
+    req: PredictionGenerateRequest,
+    background_tasks: BackgroundTasks,
+    current_user: Optional[dict] = Depends(get_optional_user),
+):
+    """
+    Generate evidence-based quantitative market outlook for a stock.
+    Grounded in real OHLCV data, realized historical volatility, and official disclosures.
+    """
+    user_id = current_user.get("id") if current_user else None
+    query = req.company_or_ticker.strip()
+    if not query:
+        raise HTTPException(status_code=400, detail="Company name or ticker required.")
+
+    collection = await collect_multi_source_data(query)
+    verification = verify_multi_source_evidence(
+        collection.company_symbol, collection.company_name, collection.documents
+    )
+    outlook = generate_market_outlook(
+        collection.company_symbol, collection.company_name, verification, horizon_days=req.horizon_days
+    )
+
+    background_tasks.add_task(
+        save_intelligence_analysis, collection, verification, outlook, user_id
+    )
+
+    return outlook.dict()
+
+
+@app.get("/api/predictions/{company}")
+async def get_latest_prediction(company: str):
+    """Get latest market outlook and evidence forecast for a company."""
+    symbol, name, _, _ = resolve_company_symbol(company)
+    history = get_stored_predictions_history(symbol)
+    if history:
+        return history[0]
+
+    # Generate on the fly if not cached
+    collection = await collect_multi_source_data(symbol)
+    verification = verify_multi_source_evidence(
+        collection.company_symbol, collection.company_name, collection.documents
+    )
+    outlook = generate_market_outlook(
+        collection.company_symbol, collection.company_name, verification
+    )
+    return outlook.dict()
+
+
+@app.get("/api/predictions/history/{company}")
+async def get_prediction_history(company: str):
+    """Get historical forecasts and evaluation history for a company."""
+    symbol, name, _, _ = resolve_company_symbol(company)
+    history = get_stored_predictions_history(symbol)
+    return {
+        "company_symbol": symbol,
+        "company_name": name,
+        "total_predictions": len(history),
+        "history": history,
+    }
 
 
 # ---------------------------------------------------------------------------

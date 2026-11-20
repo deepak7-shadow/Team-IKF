@@ -48,5 +48,17 @@ def is_supabase_configured() -> bool:
     )
 
 
+def get_supabase_client():
+    """Return an initialized Supabase client or None if not configured."""
+    if not is_supabase_configured():
+        return None
+    try:
+        from supabase import create_client
+        return create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+    except Exception:
+        return None
+
+
+
 def is_gemini_configured() -> bool:
     return bool(GEMINI_API_KEY and GEMINI_API_KEY != "your-gemini-api-key-here")

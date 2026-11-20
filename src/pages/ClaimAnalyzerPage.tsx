@@ -35,10 +35,13 @@ import {
   fetchClaimById,
   checkBackendHealth,
   createPredictionApi,
+  analyzeCompanyIntelligence,
   type ClaimReport,
   type ClaimListItem,
+  type MultiSourceIntelligenceResult,
 } from "../lib/api";
 import type { RiskLevel } from "../types";
+import IntelligencePanel from "../components/intelligence/IntelligencePanel";
 
 // ---------------------------------------------------------------------------
 // TYPES
@@ -309,6 +312,10 @@ export default function ClaimAnalyzerPage() {
   const [showSources, setShowSources] = useState(true);
   const [showMissing, setShowMissing] = useState(false);
 
+  // Intelligence panel
+  const [intelligenceData, setIntelligenceData] = useState<MultiSourceIntelligenceResult | null>(null);
+  const [intelligenceLoading, setIntelligenceLoading] = useState(false);
+
   // Check backend on mount
   useEffect(() => {
     checkBackendHealth().then((status) => {
@@ -385,6 +392,24 @@ export default function ClaimAnalyzerPage() {
       stepTimers.forEach(clearTimeout);
       setProcessingStep(5);
       setReport(result);
+      if (result.multi_source_intelligence) {
+        setIntelligenceData(result.multi_source_intelligence);
+      } else {
+        const detectedSec =
+          result.extracted_entities?.security || result.extracted_entities?.ticker_symbol;
+        if (detectedSec) {
+          setIntelligenceLoading(true);
+          analyzeCompanyIntelligence({
+            companyOrTicker: detectedSec,
+            claimText: result.claim_text,
+          })
+            .then((data) => setIntelligenceData(data))
+            .catch(() => {})
+            .finally(() => setIntelligenceLoading(false));
+        } else {
+          setIntelligenceData(null);
+        }
+      }
       setFlowState("report");
 
       // Mirror to Supabase claims table via frontend client (optional, backend also does this)
@@ -434,6 +459,8 @@ export default function ClaimAnalyzerPage() {
   const handleReset = () => {
     setFlowState("submission");
     setReport(null);
+    setIntelligenceData(null);
+    setIntelligenceLoading(false);
     setAnalysisError(null);
     setValidationError(null);
     setIsSavedReport(false);
@@ -527,6 +554,24 @@ export default function ClaimAnalyzerPage() {
     try {
       const loaded = await fetchClaimById(id);
       setReport(loaded);
+      if (loaded.multi_source_intelligence) {
+        setIntelligenceData(loaded.multi_source_intelligence);
+      } else {
+        const detectedSec =
+          loaded.extracted_entities?.security || loaded.extracted_entities?.ticker_symbol;
+        if (detectedSec) {
+          setIntelligenceLoading(true);
+          analyzeCompanyIntelligence({
+            companyOrTicker: detectedSec,
+            claimText: loaded.claim_text,
+          })
+            .then((data) => setIntelligenceData(data))
+            .catch(() => {})
+            .finally(() => setIntelligenceLoading(false));
+        } else {
+          setIntelligenceData(null);
+        }
+      }
       setClaimInput(loaded.claim_text);
       setSourceUrl(loaded.source_url || "");
       setFlowState("report");
@@ -1132,6 +1177,27 @@ export default function ClaimAnalyzerPage() {
                 </div>
               )}
             </Card>
+          )}
+
+          {/* Multi-Source Financial Intelligence & Prediction Engine Panel */}
+          {intelligenceLoading && (
+            <Card className="p-6 border-[#E9E1D1] bg-[#FAF7F0] text-center space-y-3">
+              <RefreshCw className="w-6 h-6 text-[#C49A45] animate-spin mx-auto" />
+              <div>
+                <p className="text-xs font-bold text-[#25251F]">
+                  Gathering Multi-Source Financial Intelligence
+                </p>
+                <p className="text-[11px] text-[#777365] mt-0.5">
+                  Querying SEBI circulars, NSE &amp; BSE filings, and Moneycontrol news...
+                </p>
+              </div>
+            </Card>
+          )}
+
+          {(intelligenceData || report.multi_source_intelligence) && (
+            <IntelligencePanel
+              data={intelligenceData || report.multi_source_intelligence!}
+            />
           )}
 
           {/* Action Row */}

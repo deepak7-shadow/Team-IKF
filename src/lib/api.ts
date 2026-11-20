@@ -63,6 +63,9 @@ export interface ClaimReport {
   analysis_duration_ms: number | null;
   analyzed_at: string | null;
   ai_engine: string;
+  multi_source_intelligence?: MultiSourceIntelligenceResult | null;
+  evidence_summary?: VerificationSummary | null;
+  market_outlook?: MarketOutlookResult | null;
 }
 
 export interface ClaimListItem {
@@ -452,4 +455,178 @@ export async function evaluatePredictionApi(id: string): Promise<PredictionApiRe
 
 export async function fetchPredictionAnalyticsApi(): Promise<PredictionAnalyticsResponse> {
   return apiGet<PredictionAnalyticsResponse>("/api/v1/predictions/analytics");
+}
+
+// ---------------------------------------------------------------------------
+// Multi-Source Financial Intelligence & Prediction Engine API
+// ---------------------------------------------------------------------------
+
+export interface SourceQueryStatus {
+  source_code: string;
+  source_name: string;
+  base_url: string;
+  hierarchy_level: string;
+  status: "operational" | "degraded" | "unavailable" | "no_records_found";
+  retrieval_timestamp: string;
+  status_details: string;
+  documents_count: number;
+}
+
+export interface CollectedDocument {
+  id?: string;
+  company_symbol: string;
+  company_name: string;
+  source_code: string;
+  source_url: string;
+  title: string;
+  document_type: string;
+  publication_date?: string | null;
+  retrieval_date: string;
+  excerpt: string;
+  content_hash: string;
+  is_duplicate: boolean;
+  duplicate_notice?: string | null;
+  metadata?: Record<string, any>;
+}
+
+export interface EvidenceItem {
+  id: string;
+  document_id?: string | null;
+  company_symbol: string;
+  source_code: string;
+  source_name: string;
+  source_url: string;
+  source_tier: string;
+  publication_date?: string | null;
+  retrieval_date: string;
+  classification: "supports" | "contradicts" | "context" | "unclear";
+  relevance_score: number;
+  authenticity_score: number;
+  recency_score: number;
+  is_duplicate: boolean;
+  duplicate_notice?: string | null;
+  extracted_passage: string;
+  analysis_notes: string;
+  contradiction_flag: boolean;
+  contradiction_details?: string | null;
+}
+
+export interface VerificationSummary {
+  company_symbol: string;
+  company_name: string;
+  claim_text?: string | null;
+  total_sources_consulted: number;
+  primary_official_count: number;
+  secondary_journalism_count: number;
+  duplicate_disclosures_found: number;
+  cross_source_conflicts_found: number;
+  evidence_items: EvidenceItem[];
+  supporting_evidence: EvidenceItem[];
+  contradicting_evidence: EvidenceItem[];
+  context_evidence: EvidenceItem[];
+  unclear_evidence: EvidenceItem[];
+  verification_verdict: string;
+  verdict_explanation: string;
+  is_sufficient_evidence: boolean;
+  data_gap_warnings: string[];
+}
+
+export interface MarketOutlookResult {
+  company_symbol: string;
+  company_name: string;
+  reference_price?: number | null;
+  reference_timestamp: string;
+  market_data_provider: string;
+  data_sufficiency_status: "sufficient" | "insufficient";
+  insufficient_data_reason?: string | null;
+  expected_direction: "Upward" | "Downward" | "Uncertain";
+  forecast_horizon_days: number;
+  forecast_price_low?: number | null;
+  forecast_price_high?: number | null;
+  forecast_price_expected?: number | null;
+  model_name: string;
+  model_version: string;
+  prediction_methodology: string;
+  confidence_score: number;
+  uncertainty_level: "low" | "moderate" | "high" | "severe";
+  uncertainty_explanation: string;
+  historical_facts: Record<string, any>;
+  verified_company_info: Record<string, any>;
+  news_and_context: Record<string, any>;
+  model_estimates: Record<string, any>;
+  main_factors: string[];
+  supporting_evidence: string[];
+  contradicting_evidence: string[];
+  risk_factors: string[];
+  plain_language_explanation: string;
+}
+
+export interface MultiSourceIntelligenceResult {
+  company_symbol: string;
+  company_name: string;
+  sector?: string | null;
+  query_timestamp: string;
+  sources_status: SourceQueryStatus[];
+  documents: CollectedDocument[];
+  evidence_summary: VerificationSummary;
+  market_outlook: MarketOutlookResult;
+}
+
+/** Analyze company multi-source financial intelligence across SEBI, NSE, BSE, and Moneycontrol. */
+export async function analyzeCompanyIntelligence(params: {
+  companyOrTicker: string;
+  claimText?: string;
+  horizonDays?: number;
+}): Promise<MultiSourceIntelligenceResult> {
+  return apiPost<MultiSourceIntelligenceResult>("/api/intelligence/analyze", {
+    company_or_ticker: params.companyOrTicker,
+    claim_text: params.claimText || null,
+    horizon_days: params.horizonDays || 30,
+  });
+}
+
+/** Retrieve all indexed source documents for a company. */
+export async function fetchCompanySources(company: string): Promise<{
+  company_symbol: string;
+  company_name: string;
+  total_documents: number;
+  documents: CollectedDocument[];
+}> {
+  return apiGet(`/api/intelligence/sources/${encodeURIComponent(company)}`);
+}
+
+/** Retrieve verified evidence records for a company. */
+export async function fetchCompanyEvidence(company: string): Promise<{
+  company_symbol: string;
+  company_name: string;
+  total_evidence_records: number;
+  evidence_records: EvidenceItem[];
+}> {
+  return apiGet(`/api/intelligence/evidence/${encodeURIComponent(company)}`);
+}
+
+/** Generate an evidence-based quantitative price forecast using real historical market data. */
+export async function generateCompanyPrediction(params: {
+  companyOrTicker: string;
+  horizonDays?: number;
+}): Promise<MarketOutlookResult> {
+  return apiPost<MarketOutlookResult>("/api/predictions/generate", {
+    company_or_ticker: params.companyOrTicker,
+    horizon_days: params.horizonDays || 30,
+  });
+}
+
+/** Fetch latest market outlook for a company. */
+export async function fetchLatestPrediction(company: string): Promise<MarketOutlookResult> {
+  return apiGet<MarketOutlookResult>(`/api/predictions/${encodeURIComponent(company)}`);
+}
+
+/** Fetch prediction history for a company. */
+export async function fetchPredictionHistoryForCompany(company: string): Promise<{
+  company_symbol: string;
+  company_name: string;
+  total_predictions: number;
+  history: MarketOutlookResult[];
+}> {
+  return apiGet(`/api/predictions/history/${encodeURIComponent(company)}`);
 }
