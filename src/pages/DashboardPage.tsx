@@ -112,15 +112,14 @@ export default function DashboardPage() {
           <div className="max-w-2xl space-y-2.5">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFFEFA] border border-[#E4C477] text-[#9E7828] text-xs font-semibold tracking-wide shadow-sm">
               <Sparkles className="w-3.5 h-3.5 text-[#C49A45]" />
-              <span>FINTRUST INTELLIGENCE TERMINAL</span>
+              <span>AI FINANCIAL FACT-CHECKER</span>
             </div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#25251F] tracking-tight leading-snug">
-              Audit Financial Claims with{" "}
-              <span className="gradient-text font-black">Institutional Precision</span>
+              Verify Stock Claims with{" "}
+              <span className="gradient-text font-black">Real Market Evidence</span>
             </h1>
             <p className="text-xs sm:text-sm text-[#777365] leading-relaxed font-normal max-w-xl text-balance">
-              Forensic verification of social media advice, target price assertions, and creator track records
-              benchmarked against official registries and verifiable historical pricing data.
+              Paste any viral stock tip, price target, or social media claim. We check it against official SEBI circulars, NSE &amp; BSE company filings, and market news before you invest.
             </p>
           </div>
 
