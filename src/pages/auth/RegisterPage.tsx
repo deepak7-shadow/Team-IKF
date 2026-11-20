@@ -86,16 +86,16 @@ export default function RegisterPage() {
       {/* Single Centered Luxury Card */}
       <div className="w-full max-w-lg bg-[#FFFEFA] border border-[#E9E1D1] rounded-3xl p-6 sm:p-8 shadow-warm space-y-6 relative z-10 my-8">
         {/* Brand & Header */}
-        <div className="flex flex-col items-center text-center space-y-3">
-          <Link to="/dashboard" className="flex items-center gap-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-champagne flex items-center justify-center shadow-gold-glow border border-[#C49A45]/30">
-              <ShieldCheck className="w-6 h-6 text-[#25251F]" />
+        <div className="flex flex-col items-center text-center space-y-4">
+          <Link to="/dashboard" className="flex items-center gap-3.5 group">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-champagne flex items-center justify-center shadow-gold-glow border border-[#C49A45]/35 shrink-0 transition-transform group-hover:scale-105">
+              <ShieldCheck className="w-8 h-8 sm:w-9 sm:h-9 text-[#25251F]" />
             </div>
             <div className="text-left">
-              <span className="font-extrabold text-xl tracking-tight text-[#25251F] block leading-none">
+              <span className="font-black text-2xl sm:text-3xl tracking-tight text-[#25251F] block leading-none">
                 FINTRUST <span className="text-[#A88032] font-black">AI</span>
               </span>
-              <span className="text-[11px] text-[#777365] font-medium leading-none mt-1 block">
+              <span className="text-xs sm:text-sm text-[#777365] font-medium leading-none mt-1.5 block">
                 Clarity before conviction.
               </span>
             </div>
