@@ -109,18 +109,17 @@ export default function Sidebar({
             onClick={onCloseMobile}
             className="flex items-center gap-3 group overflow-hidden"
           >
-            <div className="relative w-10 h-10 rounded-xl bg-gradient-champagne flex items-center justify-center shadow-gold-glow shrink-0 border border-[#C49A45]/30">
+            <div className="w-10 h-10 rounded-xl bg-gradient-champagne flex items-center justify-center shadow-gold-glow shrink-0 border border-[#C49A45]/30">
               <ShieldCheck className="w-5 h-5 text-[#25251F]" />
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#C49A45] ring-2 ring-[#FFFEFA]" />
             </div>
 
             {(!isCollapsed || isMobile) && (
               <div className="flex flex-col min-w-0">
-                <span className="font-extrabold text-base tracking-tight text-[#25251F] leading-tight flex items-center gap-1">
+                <span className="font-extrabold text-base tracking-tight text-[#25251F] flex items-center gap-1.5">
                   FINTRUST <span className="text-[#A88032] font-black">AI</span>
                 </span>
-                <span className="text-[10px] text-[#777365] font-medium tracking-wide uppercase">
-                  Institutional Audit
+                <span className="text-[11px] text-[#777365] font-medium leading-none mt-1">
+                  Clarity before conviction.
                 </span>
               </div>
             )}
@@ -200,22 +199,6 @@ export default function Sidebar({
 
       {/* Bottom User & Status Section */}
       <div className="p-3 border-t border-[#E9E1D1] space-y-2">
-        {/* Verification Status Pill (expanded only) */}
-        {(!isCollapsed || isMobile) && (
-          <div className="p-2.5 rounded-xl bg-[#FFFEFA] border border-[#E9E1D1] flex items-center justify-between shadow-sm">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="w-2 h-2 rounded-full bg-[#258B65] shrink-0" />
-              <div className="truncate">
-                <p className="text-[11px] font-semibold text-[#25251F] truncate">SEBI Reg. Radar</p>
-                <p className="text-[10px] text-[#777365]">Online & Active</p>
-              </div>
-            </div>
-            <span className="text-[10px] text-[#9E7828] font-mono font-medium bg-[#F5EEDB] px-1.5 py-0.5 rounded shrink-0 border border-[#C49A45]/30">
-              v1.4
-            </span>
-          </div>
-        )}
-
         {/* User Profile Card */}
         <div
           className={`p-2 rounded-xl bg-[#FFFEFA] border border-[#E9E1D1] flex items-center shadow-sm ${

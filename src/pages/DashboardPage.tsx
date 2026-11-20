@@ -9,7 +9,6 @@ import {
   ChevronRight,
   CheckCircle2,
   AlertCircle,
-  Database,
   Layers,
 } from "lucide-react";
 import {
@@ -110,23 +109,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16 animate-fade-in w-full overflow-x-hidden">
-      {/* Database Connection / Real-time Status Notice */}
-      <div className="px-4 py-2.5 rounded-xl bg-[#FAF7F0] border border-[#E9E1D1] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[#777365] shadow-sm">
-        <div className="flex items-center gap-2">
-          <Database className="w-3.5 h-3.5 text-[#C49A45] shrink-0" />
-          <span>
-            <strong className="text-[#25251F] font-semibold">Live Database Connected:</strong>{" "}
-            {isSupabaseConfigured()
-              ? "All metrics are computed strictly from real database records in Supabase."
-              : "Supabase client initialized. Configure project credentials in .env to persist records."}
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0 text-[11px] font-mono text-[#9E9988]">
-          <span className="w-2 h-2 rounded-full bg-[#258B65]" />
-          <span>Active Sync</span>
-        </div>
-      </div>
-
       {/* Premium Hero Section with Subtle Champagne Gradient */}
       <div className="relative rounded-2xl sm:rounded-3xl p-6 sm:p-8 overflow-hidden border border-[#E9E1D1] bg-gradient-to-r from-[#FAF7F0] via-[#FAF7F0] to-[#EFE8DA] shadow-warm">
         {/* Soft Ambient Champagne Glow */}
