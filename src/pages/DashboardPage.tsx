@@ -379,154 +379,77 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* Split Section: Recent Claims & Top Influencers */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
-        {/* Recent Analyzed Claims Feed */}
-        <Card className="lg:col-span-2 min-w-0">
-          <CardHeader>
-            <div>
-              <CardTitle>Recent Claim Verifications</CardTitle>
-              <CardDescription>Live incoming stream of analyzed market assertions</CardDescription>
-            </div>
-            <Link to="/claim-analyzer">
-              <Button variant="ghost" size="sm" className="text-xs text-[#A88032] font-semibold hover:text-[#25251F]">
-                View All <ChevronRight className="w-3.5 h-3.5 ml-1" />
-              </Button>
-            </Link>
-          </CardHeader>
-
-          {claims.length === 0 ? (
-            <div className="p-8">
-              <EmptyState
-                icon={ShieldCheck}
-                title="No claims analyzed yet"
-                description="Submit verbatim statements, creator posts, or video transcripts to audit their compliance and evidence base."
-                actionLabel="Analyze a Claim"
-                actionTo="/claim-analyzer"
-                compact
-              />
-            </div>
-          ) : (
-            <div className="space-y-3 p-4">
-              {claims.slice(0, 5).map((claim) => (
-                <div
-                  key={claim.id}
-                  className="p-4 rounded-xl bg-[#FAF7F0] hover:bg-[#F1EBDD] border border-[#E9E1D1] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm"
-                >
-                  <div className="space-y-1.5 min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        variant={
-                          claim.riskLevel === "low"
-                            ? "success"
-                            : claim.riskLevel === "medium"
-                            ? "warning"
-                            : "danger"
-                        }
-                        size="sm"
-                        dot
-                      >
-                        {claim.riskLevel.toUpperCase()} RISK
-                      </Badge>
-                      <span className="text-[11px] text-[#777365]">
-                        Score: {claim.overallScore}/10
-                      </span>
-                    </div>
-                    <p className="text-xs sm:text-sm font-semibold text-[#25251F] line-clamp-1">
-                      "{claim.claimText}"
-                    </p>
-                    <p className="text-[11px] text-[#777365] line-clamp-1">
-                      {claim.summary}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                    <Link to="/claim-analyzer">
-                      <Button variant="secondary" size="sm" className="text-xs">
-                        Inspect Evidence
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
-
-        {/* Finfluencer Radar Leaderboard */}
-        <Card className="min-w-0">
-          <CardHeader>
-            <div>
-              <CardTitle>Finfluencer Audit Radar</CardTitle>
-              <CardDescription>Tracked creators & verification rates</CardDescription>
-            </div>
-            <Link to="/finfluencer-explorer">
-              <Button variant="ghost" size="sm" className="text-xs text-[#A88032] font-semibold hover:text-[#25251F]">
-                Full Directory
-              </Button>
-            </Link>
-          </CardHeader>
-
-          {finfluencers.length === 0 ? (
-            <div className="p-8">
-              <EmptyState
-                icon={Users}
-                title="No creators monitored yet"
-                description="Monitor social creators to audit their historical forecast accuracy and compliance."
-                actionLabel="Explore Creators"
-                actionTo="/finfluencer-explorer"
-                compact
-              />
-            </div>
-          ) : (
-            <div className="space-y-3 p-4">
-              {finfluencers.slice(0, 5).map((inf) => (
-                <div
-                  key={inf.id}
-                  className="p-3 rounded-xl bg-[#FAF7F0] border border-[#E9E1D1] flex items-center justify-between gap-3 hover:border-[#D6A94F] transition-all shadow-sm"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-champagne flex items-center justify-center font-bold text-xs text-[#25251F] shrink-0 border border-[#C49A45]/30">
-                      {inf.name.charAt(0)}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-[#25251F] truncate">
-                          {inf.name}
-                        </span>
-                        {inf.verificationStatus === "verified" ? (
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#258B65] shrink-0" />
-                        ) : (
-                          <AlertCircle className="w-3.5 h-3.5 text-[#D49A32] shrink-0" />
-                        )}
-                      </div>
-                      <span className="text-[11px] text-[#777365] font-mono">
-                        {inf.handle}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="text-right shrink-0">
-                    <div className="text-xs font-extrabold text-[#25251F]">
-                      {inf.accuracyScore}%
-                    </div>
-                    <span className="text-[10px] text-[#777365] uppercase font-medium">Accuracy</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="p-4 border-t border-[#E9E1D1]">
-            <div className="p-3 rounded-xl bg-[#FAF7F0] border border-[#E4C477]/50 flex items-start gap-2.5 shadow-sm">
-              <Sparkles className="w-4 h-4 text-[#C49A45] shrink-0 mt-0.5" />
-              <p className="text-[11px] text-[#777365] leading-relaxed">
-                SEBI mandatory registration checks and statutory disclaimers are validated against official registry records.
-              </p>
-            </div>
+      {/* Recent Analyzed Claims Feed */}
+      <Card className="w-full min-w-0">
+        <CardHeader>
+          <div>
+            <CardTitle>Recent Claim Verifications</CardTitle>
+            <CardDescription>Live incoming stream of analyzed market assertions</CardDescription>
           </div>
-        </Card>
-      </div>
+          <Link to="/claim-analyzer">
+            <Button variant="ghost" size="sm" className="text-xs text-[#A88032] font-semibold hover:text-[#25251F]">
+              View All <ChevronRight className="w-3.5 h-3.5 ml-1" />
+            </Button>
+          </Link>
+        </CardHeader>
+
+        {claims.length === 0 ? (
+          <div className="p-8">
+            <EmptyState
+              icon={ShieldCheck}
+              title="No claims analyzed yet"
+              description="Submit verbatim statements, creator posts, or video transcripts to audit their compliance and evidence base."
+              actionLabel="Analyze a Claim"
+              actionTo="/claim-analyzer"
+              compact
+            />
+          </div>
+        ) : (
+          <div className="space-y-3 p-4">
+            {claims.slice(0, 5).map((claim) => (
+              <div
+                key={claim.id}
+                className="p-4 rounded-xl bg-[#FAF7F0] hover:bg-[#F1EBDD] border border-[#E9E1D1] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm"
+              >
+                <div className="space-y-1.5 min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant={
+                        claim.riskLevel === "low"
+                          ? "success"
+                          : claim.riskLevel === "medium"
+                          ? "warning"
+                          : "danger"
+                      }
+                      size="sm"
+                      dot
+                    >
+                      {claim.riskLevel.toUpperCase()} RISK
+                    </Badge>
+                    <span className="text-[11px] text-[#777365]">
+                      Score: {claim.overallScore}/10
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm font-semibold text-[#25251F] line-clamp-1">
+                    "{claim.claimText}"
+                  </p>
+                  <p className="text-[11px] text-[#777365] line-clamp-1">
+                    {claim.summary}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                  <Link to="/claim-analyzer">
+                    <Button variant="secondary" size="sm" className="text-xs">
+                      Inspect Evidence
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }
