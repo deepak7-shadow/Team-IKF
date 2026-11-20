@@ -76,11 +76,6 @@ export default function TopNav({
           title: "Claim Analyzer",
           subtitle: "Submit & verify financial claims against factual data",
         };
-      case "/finfluencer-explorer":
-        return {
-          title: "Finfluencer Explorer",
-          subtitle: "Monitor and audit social financial creators",
-        };
       case "/prediction-tracker":
         return {
           title: "Prediction Tracker",

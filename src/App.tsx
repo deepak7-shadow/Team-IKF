@@ -6,7 +6,6 @@ import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import ClaimAnalyzerPage from "./pages/ClaimAnalyzerPage";
-import FinfluencerExplorerPage from "./pages/FinfluencerExplorerPage";
 import PredictionTrackerPage from "./pages/PredictionTrackerPage";
 import InvestorEducationPage from "./pages/InvestorEducationPage";
 import SavedReportsPage from "./pages/SavedReportsPage";
@@ -61,7 +60,6 @@ export default function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/claim-analyzer" element={<ClaimAnalyzerPage />} />
-          <Route path="/finfluencer-explorer" element={<FinfluencerExplorerPage />} />
           <Route path="/prediction-tracker" element={<PredictionTrackerPage />} />
           <Route path="/investor-education" element={<InvestorEducationPage />} />
           <Route path="/saved-reports" element={<SavedReportsPage />} />

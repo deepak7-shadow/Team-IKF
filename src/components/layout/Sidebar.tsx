@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   ShieldCheck,
-  Users,
   TrendingUp,
   BookOpen,
   BookmarkCheck,
@@ -58,12 +57,6 @@ export default function Sidebar({
       icon: ShieldCheck,
       badge: "AI Core",
       badgeColor: "bg-[#F5EEDB] text-[#9E7828] border-[#C49A45]/35",
-    },
-    {
-      label: "Finfluencer Explorer",
-      path: "/finfluencer-explorer",
-      icon: Users,
-      badge: null,
     },
     {
       label: "Prediction Tracker",

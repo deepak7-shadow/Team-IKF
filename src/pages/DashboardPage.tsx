@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import {
   ShieldCheck,
   AlertTriangle,
-  Users,
   TrendingUp,
   Sparkles,
   ChevronRight,
@@ -29,15 +28,13 @@ import { Button } from "../components/ui/Button";
 import { EmptyState } from "../components/ui/EmptyState";
 import {
   fetchClaims,
-  fetchFinfluencers,
   fetchPredictions,
   isSupabaseConfigured,
 } from "../lib/supabase";
-import type { Claim, Finfluencer, Prediction } from "../types";
+import type { Claim, Prediction } from "../types";
 
 export default function DashboardPage() {
   const [claims, setClaims] = useState<Claim[]>([]);
-  const [finfluencers, setFinfluencers] = useState<Finfluencer[]>([]);
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -48,13 +45,11 @@ export default function DashboardPage() {
     async function loadDashboardData() {
       setIsLoading(true);
       try {
-        const [loadedClaims, loadedFinfluencers, loadedPredictions] = await Promise.all([
+        const [loadedClaims, loadedPredictions] = await Promise.all([
           fetchClaims(),
-          fetchFinfluencers(),
           fetchPredictions(),
         ]);
         setClaims(loadedClaims);
-        setFinfluencers(loadedFinfluencers);
         setPredictions(loadedPredictions);
       } catch (err) {
         console.error("Error loading dashboard data:", err);
@@ -72,8 +67,6 @@ export default function DashboardPage() {
     claims.length > 0
       ? (claims.reduce((acc, c) => acc + (c.overallScore || 0), 0) / claims.length).toFixed(1) + " / 10"
       : "—";
-
-  const creatorsCount = finfluencers.length;
 
   const evaluatedPredictions = predictions.filter(
     (p) => p.status === "met" || p.status === "not_met" || p.status === "partially_met" ||
@@ -138,9 +131,10 @@ export default function DashboardPage() {
                 Analyze a Claim
               </Button>
             </Link>
-            <Link to="/finfluencer-explorer">
+            <Link to="/prediction-tracker">
               <Button variant="secondary" size="md">
-                View Influencers
+                <TrendingUp className="w-4 h-4 mr-1.5" />
+                Track Predictions
               </Button>
             </Link>
           </div>
@@ -166,10 +160,10 @@ export default function DashboardPage() {
           isDemo={false}
         />
         <StatCard
-          title="Creators Monitored"
-          value={isLoading ? "..." : creatorsCount.toString()}
-          changeLabel="active directory entries"
-          icon={Users}
+          title="Predictions Tracked"
+          value={isLoading ? "..." : predictions.length.toString()}
+          changeLabel="total forecast targets logged"
+          icon={Layers}
           iconColor="violet"
           isDemo={false}
         />
