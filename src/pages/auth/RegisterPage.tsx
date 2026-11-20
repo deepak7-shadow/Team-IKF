@@ -112,14 +112,14 @@ export default function RegisterPage() {
               {/* Glowing logo ring */}
               <div className="relative">
                 <div className="absolute -inset-2 rounded-3xl bg-gradient-to-br from-[#C49A45]/40 via-[#E4C477]/50 to-[#D6A94F]/40 blur-xl opacity-80 group-hover:opacity-100 transition-opacity" />
-                <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-br from-[#C49A45] via-[#D6A94F] to-[#A87B2A] flex items-center justify-center shadow-[0_8px_32px_rgba(196,154,69,0.45)] border-2 border-[#E4C477]/60 transition-transform group-hover:scale-105">
-                  <ShieldCheck className="w-12 h-12 sm:w-14 sm:h-14 text-white drop-shadow-md" />
+                <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-[#C49A45] via-[#D6A94F] to-[#A87B2A] flex items-center justify-center shadow-[0_8px_32px_rgba(196,154,69,0.45)] border-2 border-[#E4C477]/60 transition-transform group-hover:scale-105">
+                  <ShieldCheck className="w-9 h-9 sm:w-10 sm:h-10 text-white drop-shadow-md" />
                 </div>
               </div>
 
               {/* Brand Name */}
               <div className="flex flex-col items-center gap-0.5">
-                <span className="font-black text-4xl sm:text-5xl tracking-tight text-[#25251F] leading-none">
+                <span className="font-black text-3xl sm:text-4xl tracking-tight text-[#25251F] leading-none">
                   FINTRUST{" "}
                   <span className="bg-gradient-to-r from-[#C49A45] via-[#E4C477] to-[#A87B2A] bg-clip-text text-transparent font-black">
                     AI
