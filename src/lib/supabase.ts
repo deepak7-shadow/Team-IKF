@@ -461,6 +461,32 @@ export async function fetchNotifications(userId?: string): Promise<NotificationI
   }
 }
 
+export async function createNotification(notification: {
+  title: string;
+  description: string;
+  type: "alert" | "success" | "info";
+}): Promise<void> {
+  if (!isSupabaseConfigured()) return;
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user?.id) return;
+    const { error } = await supabase.from("notifications").insert([
+      {
+        user_id: user.id,
+        title: notification.title,
+        description: notification.description,
+        type: notification.type,
+        is_read: false,
+      },
+    ]);
+    if (error) console.warn("createNotification insert error:", error.message);
+  } catch (err) {
+    console.error("createNotification exception:", err);
+  }
+}
+
 function formatTimeAgo(date: Date): string {
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
   if (seconds < 60) return "Just now";

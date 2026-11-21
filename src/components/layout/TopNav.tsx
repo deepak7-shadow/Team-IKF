@@ -48,6 +48,15 @@ export default function TopNav({
       }
     }
     loadInitialData();
+
+    // Refresh notifications & user info whenever the auth session changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      loadInitialData();
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {

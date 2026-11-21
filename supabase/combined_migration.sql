@@ -287,6 +287,16 @@ CREATE POLICY "Allow read on own notifications"
   ON public.notifications FOR SELECT
   USING (auth.uid() = user_id OR user_id IS NULL);
 
+DROP POLICY IF EXISTS "Allow insert on own notifications" ON public.notifications;
+CREATE POLICY "Allow insert on own notifications"
+  ON public.notifications FOR INSERT
+  WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+
+DROP POLICY IF EXISTS "Allow update on own notifications" ON public.notifications;
+CREATE POLICY "Allow update on own notifications"
+  ON public.notifications FOR UPDATE
+  USING (auth.uid() = user_id OR user_id IS NULL);
+
 -- 4.6 CLAIM UPLOADS POLICIES
 DROP POLICY IF EXISTS "Allow read on own uploads" ON public.claim_uploads;
 CREATE POLICY "Allow read on own uploads"

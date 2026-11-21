@@ -32,7 +32,7 @@ import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { EmptyState } from "../components/ui/EmptyState";
-import { createClaim, fetchClaims, createPrediction, createSavedReport } from "../lib/supabase";
+import { createClaim, fetchClaims, createPrediction, createSavedReport, createNotification } from "../lib/supabase";
 import {
   submitClaim,
   fetchClaimHistory,
@@ -486,6 +486,34 @@ export default function ClaimAnalyzerPage() {
       } catch (dbErr) {
         console.warn("Frontend Supabase mirror failed (non-critical):", dbErr);
       }
+
+      // Auto-generate a notification for this claim analysis result
+      try {
+        const riskLevel = result.risk_level;
+        const entity =
+          result.extracted_entities?.security || "the analyzed claim";
+        if (riskLevel === "critical" || riskLevel === "high") {
+          await createNotification({
+            title: `⚠️ High Risk Claim Detected`,
+            description: `${entity} scored ${result.risk_score?.toFixed(1) ?? "—"}/10. Immediate forensic review recommended.`,
+            type: "alert",
+          });
+        } else if (riskLevel === "low") {
+          await createNotification({
+            title: `✅ Claim Verified — Low Risk`,
+            description: `${entity} passed multi-source verification with low risk indicators.`,
+            type: "success",
+          });
+        } else {
+          await createNotification({
+            title: `📋 Claim Analysis Complete`,
+            description: `${entity} analyzed. Risk level: ${riskLevel}. Review the full report.`,
+            type: "info",
+          });
+        }
+      } catch {
+        /* notification is non-critical */
+      }
     } catch (err) {
       stepTimers.forEach(clearTimeout);
       const errorMsg = err instanceof Error ? err.message : "Analysis failed. Please try again.";
@@ -523,6 +551,16 @@ export default function ClaimAnalyzerPage() {
         dossierData: { claimId: report.id, riskScore: report.risk_score },
       });
       setIsSavedReport(true);
+      // Notify user the dossier was saved
+      try {
+        await createNotification({
+          title: "📁 Report Saved to Dossier",
+          description: `Forensic dossier for "${report.extracted_entities?.security || "Financial Claim"}" saved. Access it in Saved Reports.`,
+          type: "success",
+        });
+      } catch {
+        /* non-critical */
+      }
     } catch (err) {
       console.error("Error saving report:", err);
       setIsSavedReport(true); // Show success even if Supabase not configured
