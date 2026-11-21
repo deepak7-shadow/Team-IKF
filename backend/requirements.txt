@@ -1,9 +1,13 @@
+# FINTRUST AI — Backend Dependencies
+# Production-safe: all packages have prebuilt wheels for Python 3.11
+
 fastapi==0.115.6
-uvicorn[standard]==0.32.1
+uvicorn==0.32.1
 python-multipart==0.0.20
 google-generativeai==0.8.3
 pillow==11.1.0
-pytesseract==0.3.13
+# pytesseract is excluded from cloud deploy (requires system tesseract binary)
+# Install manually for local dev: pip install pytesseract==0.3.13
 supabase==2.10.0
 python-jose[cryptography]==3.3.0
 pydantic==2.10.4
