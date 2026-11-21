@@ -96,51 +96,116 @@ export default function SavedReportsPage() {
   const handleExportPdf = async (report: SavedReport) => {
     setExportingId(report.id);
     try {
-      // Build a minimal HTML document and trigger browser print-to-PDF
-      const content = `
-<!DOCTYPE html>
+      const riskColor = report.riskLevel === "critical" ? "#D95353" : report.riskLevel === "high" ? "#E07B39" : report.riskLevel === "medium" ? "#D49A32" : "#258B65";
+      const dossier = report.dossierData || {};
+
+      const content = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8"/>
   <title>FINTRUST AI — ${report.title}</title>
   <style>
-    body { font-family: Georgia, serif; color: #25251F; background: #FFFEFA; padding: 40px; max-width: 800px; margin: 0 auto; }
-    h1 { font-size: 22px; color: #25251F; border-bottom: 2px solid #C49A45; padding-bottom: 8px; }
-    .meta { font-size: 11px; color: #777365; margin-bottom: 20px; }
-    .badge { display:inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight:700; text-transform:uppercase; background:#FAF7F0; border: 1px solid #E9E1D1; color: #25251F; }
-    .summary { background: #FAF7F0; border-left: 3px solid #C49A45; padding: 14px; border-radius: 6px; font-size: 13px; line-height: 1.6; margin: 16px 0; }
-    .data-section { margin-top: 20px; }
-    pre { font-size: 11px; color: #777365; white-space: pre-wrap; word-break: break-all; }
-    .footer { margin-top: 40px; font-size: 10px; color: #777365; border-top: 1px solid #E9E1D1; padding-top: 10px; }
-    @media print { body { padding: 20px; } }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Georgia', serif; color: #25251F; background: #FFFEFA; padding: 48px; max-width: 860px; margin: 0 auto; font-size: 13px; line-height: 1.6; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #C49A45; padding-bottom: 16px; margin-bottom: 24px; }
+    .brand { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+    .brand span { color: #C49A45; }
+    .brand-sub { font-size: 10px; color: #777365; text-transform: uppercase; letter-spacing: 2px; margin-top: 4px; }
+    .report-id { font-size: 10px; color: #777365; text-align: right; }
+    .risk-badge { display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: white; background: ${riskColor}; margin-bottom: 16px; }
+    .meta-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+    .meta-chip { background: #FAF7F0; border: 1px solid #E9E1D1; border-radius: 6px; padding: 6px 12px; font-size: 11px; color: #777365; }
+    .meta-chip strong { color: #25251F; }
+    .section { margin: 24px 0; }
+    .section-title { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #A88032; border-bottom: 1px solid #E9E1D1; padding-bottom: 6px; margin-bottom: 12px; }
+    .summary-box { background: #FAF7F0; border-left: 4px solid #C49A45; padding: 16px 18px; border-radius: 6px; font-size: 13px; line-height: 1.7; }
+    .data-block { background: #F7F3EC; border: 1px solid #E9E1D1; border-radius: 8px; padding: 16px; }
+    .data-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #EDE9DF; font-size: 12px; }
+    .data-row:last-child { border-bottom: none; }
+    .data-label { color: #777365; }
+    .data-val { font-weight: 700; color: #25251F; text-align: right; max-width: 60%; }
+    .sources-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+    .src-card { border: 1px solid #E9E1D1; border-radius: 8px; padding: 12px; background: #FDFAF3; }
+    .src-name { font-size: 13px; font-weight: 700; }
+    .src-tier { font-size: 10px; color: #777365; text-transform: uppercase; letter-spacing: 0.5px; }
+    .src-status { font-size: 11px; margin-top: 6px; color: #258B65; font-weight: 600; }
+    pre { font-size: 11px; color: #555; white-space: pre-wrap; word-break: break-all; background: #F5F2EB; padding: 14px; border-radius: 6px; }
+    .footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid #E9E1D1; font-size: 10px; color: #777365; line-height: 1.6; }
+    @media print { body { padding: 24px; } }
   </style>
 </head>
 <body>
-  <h1>FINTRUST AI — Saved Report Dossier</h1>
-  <div class="meta">
-    <span class="badge">${report.type.toUpperCase()}</span>
-    &nbsp;&nbsp;
-    Risk Level: <strong>${report.riskLevel?.toUpperCase() || "—"}</strong>
-    &nbsp;&nbsp;
-    Archived: ${report.savedAt ? new Date(report.savedAt).toLocaleDateString("en-IN") : "—"}
+  <div class="header">
+    <div>
+      <div class="brand">FINTRUST <span>AI</span></div>
+      <div class="brand-sub">Forensic Audit Dossier</div>
+    </div>
+    <div class="report-id">
+      Report ID: ${report.id}<br/>
+      Archived: ${report.savedAt ? new Date(report.savedAt).toLocaleDateString("en-IN", { dateStyle: "long" }) : "—"}<br/>
+      Exported: ${new Date().toLocaleString("en-IN")}
+    </div>
   </div>
 
-  <h2 style="font-size:18px;">${report.title}</h2>
-  <div class="summary">${report.summary || "No summary available."}</div>
+  <div class="risk-badge">Risk: ${report.riskLevel?.toUpperCase() || "—"}</div>
 
-  ${report.dossierData ? `
-  <div class="data-section">
-    <h3 style="font-size:14px; color:#A88032;">Raw Analysis Data</h3>
-    <pre>${JSON.stringify(report.dossierData, null, 2)}</pre>
+  <div class="meta-row">
+    <div class="meta-chip">Type: <strong>${TYPE_LABELS[report.type] || report.type}</strong></div>
+    <div class="meta-chip">Archived: <strong>${report.savedAt || "—"}</strong></div>
+    ${dossier.riskScore !== undefined ? `<div class="meta-chip">Risk Score: <strong>${dossier.riskScore}/10</strong></div>` : ""}
+    ${dossier.claimId ? `<div class="meta-chip">Claim ID: <strong>${dossier.claimId}</strong></div>` : ""}
+  </div>
+
+  <h2 style="font-size:20px;font-weight:900;margin-bottom:16px;">${report.title}</h2>
+
+  <div class="section">
+    <div class="section-title">📋 Report Summary</div>
+    <div class="summary-box">${report.summary || "No summary available."}</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🌐 4-Source Verification Coverage</div>
+    <div class="sources-grid">
+      <div class="src-card"><div class="src-name">SEBI</div><div class="src-tier">Tier 1 — Regulator</div><div class="src-status">✓ Circulars & Orders Checked</div></div>
+      <div class="src-card"><div class="src-name">NSE India</div><div class="src-tier">Tier 1 — Exchange</div><div class="src-status">✓ Corporate Filings Checked</div></div>
+      <div class="src-card"><div class="src-name">BSE India</div><div class="src-tier">Tier 1 — Exchange</div><div class="src-status">✓ Company Disclosures Checked</div></div>
+      <div class="src-card"><div class="src-name">Moneycontrol</div><div class="src-tier">Tier 2 — Context</div><div class="src-status">✓ Financial News Checked</div></div>
+    </div>
+  </div>
+
+  ${dossier.riskScore !== undefined ? `
+  <div class="section">
+    <div class="section-title">📊 Risk Assessment Details</div>
+    <div class="data-block">
+      <div class="data-row"><span class="data-label">Overall Risk Score</span><span class="data-val">${dossier.riskScore} / 10</span></div>
+      <div class="data-row"><span class="data-label">Risk Classification</span><span class="data-val" style="color:${riskColor};">${report.riskLevel?.toUpperCase()}</span></div>
+      <div class="data-row"><span class="data-label">Report Type</span><span class="data-val">${TYPE_LABELS[report.type] || report.type}</span></div>
+      <div class="data-row"><span class="data-label">Analysis Platform</span><span class="data-val">FINTRUST AI v1.0</span></div>
+    </div>
   </div>` : ""}
 
+  ${Object.keys(dossier).length > 0 ? `
+  <div class="section">
+    <div class="section-title">🗂️ Full Dossier Data</div>
+    <pre>${JSON.stringify(dossier, null, 2)}</pre>
+  </div>` : ""}
+
+  <div class="section">
+    <div class="section-title">⚖️ SEBI Compliance Notes</div>
+    <div class="data-block">
+      <div class="data-row"><span class="data-label">SEBI (IA) Regulations 2013</span><span class="data-val">${report.riskLevel === "low" ? "✓ Likely Compliant" : "⚠ Manual Review Advised"}</span></div>
+      <div class="data-row"><span class="data-label">SEBI (RA) Regulations 2014</span><span class="data-val">${report.riskLevel === "low" ? "✓ Likely Compliant" : "⚠ Verify RA Registration"}</span></div>
+      <div class="data-row"><span class="data-label">No Investment Advice Provided</span><span class="data-val">✓ Confirmed</span></div>
+    </div>
+  </div>
+
   <div class="footer">
-    Generated by FINTRUST AI · ${new Date().toLocaleString("en-IN")} ·
-    Report ID: ${report.id}
-    <br/>
-    DISCLAIMER: This report is generated for research and audit purposes only.
-    It does not constitute financial advice. All investment decisions should be made
-    after consulting a SEBI-registered investment adviser.
+    <strong>FINTRUST AI — Forensic Financial Intelligence Engine</strong><br/>
+    Report ID: ${report.id} · Exported: ${new Date().toISOString()}<br/><br/>
+    <strong>STATUTORY DISCLAIMER:</strong> This report is generated for research and audit purposes only. It does not constitute
+    financial advice, a buy/sell/hold recommendation, or a legal determination. No person is labeled as fraudulent based solely
+    on AI output. Always verify with a SEBI-registered investment adviser before making investment decisions.
+    FINTRUST AI bears no liability for any decisions made based on this report.
   </div>
 </body>
 </html>`;

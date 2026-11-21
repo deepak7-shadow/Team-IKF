@@ -78,6 +78,7 @@ from forecasting_engine import (
     generate_market_outlook,
     MarketOutlookResult,
 )
+import news_engine
 from intelligence_db import (
     save_intelligence_analysis,
     get_stored_company_sources,
@@ -183,6 +184,7 @@ class ClaimReport(BaseModel):
     multi_source_intelligence: Optional[dict[str, Any]] = None
     evidence_summary: Optional[dict[str, Any]] = None
     market_outlook: Optional[dict[str, Any]] = None
+    topic_market_insights: Optional[dict[str, Any]] = None
 
 
 class ClaimListItem(BaseModel):
@@ -462,6 +464,7 @@ def _build_report(raw_data: dict, claim_id: str, user_id: Optional[str]) -> Clai
         multi_source_intelligence=raw_data.get("multi_source_intelligence"),
         evidence_summary=raw_data.get("evidence_summary"),
         market_outlook=raw_data.get("market_outlook"),
+        topic_market_insights=raw_data.get("topic_market_insights"),
     )
 
 
@@ -596,6 +599,16 @@ async def submit_claim(
         except Exception as exc:
             logger.warning("Multi-source intelligence gathering failed: %s", exc)
 
+    # --- Live Financial News & Topic Market Insights Integration ---
+    topic_insights_payload = None
+    try:
+        topic_query = sec_name or claim_text
+        if any(w in claim_text.lower() for w in ["gold", "silver", "crude", "oil", "nifty", "sensex", "bank", "it ", "tech", "crypto", "bitcoin"]) or sec_name:
+            t_insights = await news_engine.get_topic_news_insights(topic_query)
+            topic_insights_payload = t_insights.dict()
+    except Exception as exc:
+        logger.warning("Live topic news insights retrieval failed: %s", exc)
+
     # --- Build storage payload ---
     raw_data: dict[str, Any] = {
         "id": claim_id,
@@ -615,6 +628,7 @@ async def submit_claim(
         "multi_source_intelligence": multi_source_payload,
         "evidence_summary": evidence_payload,
         "market_outlook": outlook_payload,
+        "topic_market_insights": topic_insights_payload,
     }
 
     # --- Persist to DB in background ---
@@ -1449,6 +1463,75 @@ async def get_prediction_history(company: str):
         "total_predictions": len(history),
         "history": history,
     }
+
+
+# ---------------------------------------------------------------------------
+# LIVE FINANCIAL NEWS & MARKET INSIGHTS ENDPOINTS
+# ---------------------------------------------------------------------------
+
+class TopicAnalyzeRequest(BaseModel):
+    topic: str
+    force_refresh: bool = False
+
+
+@app.get("/api/news/latest")
+async def get_latest_news(limit: int = 20):
+    """Retrieve latest aggregated financial news across benchmark topics."""
+    items = await news_engine.get_latest_financial_news(limit=limit)
+    return {
+        "total_items": len(items),
+        "items": [item.dict() for item in items],
+        "retrieved_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+@app.get("/api/news/search")
+async def search_topic_news(topic: str = "gold"):
+    """Search real-time financial news for a specific topic query."""
+    insights = await news_engine.get_topic_news_insights(query=topic)
+    return insights.dict()
+
+
+@app.get("/api/news/topic/{topic}")
+async def get_topic_insights_endpoint(topic: str):
+    """
+    Complete bundle for a financial topic:
+    Real-time market quote snapshot + verified news + structured 6-section AI explanation + impact.
+    """
+    insights = await news_engine.get_topic_news_insights(query=topic)
+    return insights.dict()
+
+
+@app.get("/api/news/article/{article_id}")
+async def get_news_article(article_id: str):
+    """Retrieve details for a specific verified news item."""
+    # Search in memory latest cache
+    latest = await news_engine.get_latest_financial_news(limit=40)
+    for item in latest:
+        if item.id == article_id:
+            return item.dict()
+    raise HTTPException(status_code=404, detail=f"Article {article_id} not found in active verified feeds.")
+
+
+@app.get("/api/market/snapshot/{symbol}")
+async def get_market_snapshot_endpoint(symbol: str):
+    """Retrieve live market quote snapshot for any symbol or asset."""
+    snap = await news_engine.fetch_topic_market_snapshot(symbol=symbol, name=symbol)
+    return snap.dict()
+
+
+@app.post("/api/news/analyze")
+async def analyze_topic_news(req: TopicAnalyzeRequest):
+    """Trigger on-demand multi-source news collection and evidence-based analysis."""
+    insights = await news_engine.get_topic_news_insights(query=req.topic, force_refresh=req.force_refresh)
+    return insights.dict()
+
+
+@app.get("/api/news/impact/{topic}")
+async def get_topic_impact_summary(topic: str):
+    """Retrieve 6-section impact analysis and sentiment breakdown for a topic."""
+    insights = await news_engine.get_topic_news_insights(query=topic)
+    return insights.impact_analysis.dict()
 
 
 # ---------------------------------------------------------------------------

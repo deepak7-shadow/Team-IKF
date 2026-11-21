@@ -81,6 +81,11 @@ export default function TopNav({
           title: "Prediction Tracker",
           subtitle: "Track forecast outcomes, targets and accuracy",
         };
+      case "/market-insights":
+        return {
+          title: "Market Insights & News",
+          subtitle: "Live financial news, verified multi-source intelligence & market drivers",
+        };
       case "/investor-education":
         return {
           title: "Investor Education",

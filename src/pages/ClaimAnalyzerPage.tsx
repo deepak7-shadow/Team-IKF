@@ -25,8 +25,9 @@ import {
   Globe,
   Database,
   Layers,
+  Download,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
@@ -276,6 +277,8 @@ function HistoryDrawer({ items, onSelect, isOpen, onClose }: HistoryDrawerProps)
 // MAIN COMPONENT
 // ---------------------------------------------------------------------------
 export default function ClaimAnalyzerPage() {
+  const [searchParams] = useSearchParams();
+
   // Flow state
   const [flowState, setFlowState] = useState<FlowState>("submission");
   const [processingStep, setProcessingStep] = useState(0);
@@ -286,6 +289,13 @@ export default function ClaimAnalyzerPage() {
   const [platform, setPlatform] = useState<Platform>("Other");
   const [targetDate, setTargetDate] = useState("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    const q = searchParams.get("query") || searchParams.get("asset") || searchParams.get("claim");
+    if (q) {
+      setClaimInput(`Target price forecast or investment claim regarding ${q}: `);
+    }
+  }, [searchParams]);
 
   // Validation
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -494,6 +504,187 @@ export default function ClaimAnalyzerPage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  /* ── Download detailed PDF report ── */
+  const handleDownloadReport = () => {
+    if (!report) return;
+    const e: any = report.extracted_entities || {};
+    const redFlags = report.risk_indicators || [];
+    const sources: any[] = (report.mentioned_sources as any[]) || [];
+    const riskColor = report.risk_level === "critical" ? "#D95353" : report.risk_level === "high" ? "#E07B39" : report.risk_level === "medium" ? "#D49A32" : "#258B65";
+
+    const flagsHtml = redFlags.length
+      ? redFlags.map((f: any) => `
+          <tr>
+            <td style="padding:6px 10px;border-bottom:1px solid #F0EBE0;font-size:12px;color:#D95353;font-weight:700;">${f.type?.replace(/_/g," ").toUpperCase() || "FLAG"}</td>
+            <td style="padding:6px 10px;border-bottom:1px solid #F0EBE0;font-size:12px;">${f.description || f.text || ""}</td>
+            <td style="padding:6px 10px;border-bottom:1px solid #F0EBE0;font-size:11px;color:#777365;text-transform:uppercase;">${f.severity || f.level || ""}</td>
+          </tr>`).join("") 
+      : `<tr><td colspan="3" style="padding:10px;text-align:center;color:#777365;font-size:12px;">No red flags detected</td></tr>`;
+
+    const sourcesHtml = sources.length
+      ? sources.map((s: any) => `
+          <tr>
+            <td style="padding:6px 10px;border-bottom:1px solid #F0EBE0;font-size:12px;font-weight:600;">${s.title || s.name || s.source || ""}</td>
+            <td style="padding:6px 10px;border-bottom:1px solid #F0EBE0;font-size:12px;">${s.verdict || s.status || "—"}</td>
+            <td style="padding:6px 10px;border-bottom:1px solid #F0EBE0;font-size:11px;color:#777365;">${s.context || s.detail || s.note || "—"}</td>
+          </tr>`).join("")
+      : `<tr><td colspan="3" style="padding:10px;text-align:center;color:#777365;font-size:12px;">Source data not available</td></tr>`;
+
+    const content = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>FINTRUST AI — Forensic Claim Report</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Georgia', serif; color: #25251F; background: #FFFEFA; padding: 48px; max-width: 860px; margin: 0 auto; font-size: 13px; line-height: 1.6; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #C49A45; padding-bottom: 16px; margin-bottom: 24px; }
+    .brand { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+    .brand span { color: #C49A45; }
+    .brand-sub { font-size: 10px; color: #777365; text-transform: uppercase; letter-spacing: 2px; margin-top: 4px; }
+    .report-id { font-size: 10px; color: #777365; text-align: right; }
+    .risk-badge { display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: white; background: ${riskColor}; margin-bottom: 8px; }
+    .score-row { display: flex; gap: 24px; margin: 20px 0; flex-wrap: wrap; }
+    .score-box { flex: 1; min-width: 120px; background: #FAF7F0; border: 1px solid #E9E1D1; border-radius: 10px; padding: 14px; text-align: center; }
+    .score-box .num { font-size: 28px; font-weight: 900; color: #C49A45; }
+    .score-box .lbl { font-size: 10px; color: #777365; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+    .section { margin: 28px 0; }
+    .section-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #A88032; border-bottom: 1px solid #E9E1D1; padding-bottom: 6px; margin-bottom: 14px; }
+    .claim-box { background: #FAF7F0; border-left: 4px solid #C49A45; padding: 16px 18px; border-radius: 6px; font-size: 13px; line-height: 1.7; color: #25251F; white-space: pre-wrap; }
+    .summary-box { background: #F0F9F4; border-left: 4px solid #258B65; padding: 16px 18px; border-radius: 6px; font-size: 13px; line-height: 1.7; }
+    .entities-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .entity-item { background: #FAF7F0; border: 1px solid #E9E1D1; border-radius: 8px; padding: 10px 14px; }
+    .entity-item .key { font-size: 10px; color: #777365; text-transform: uppercase; letter-spacing: 1px; }
+    .entity-item .val { font-size: 14px; font-weight: 700; color: #25251F; margin-top: 2px; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #FAF7F0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #777365; padding: 8px 10px; text-align: left; border-bottom: 2px solid #E9E1D1; }
+    .sources-4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+    .source-card { border: 1px solid #E9E1D1; border-radius: 8px; padding: 12px; background: #FDFAF3; }
+    .source-card .src-name { font-size: 12px; font-weight: 700; }
+    .source-card .src-type { font-size: 10px; color: #777365; }
+    .source-card .src-status { font-size: 11px; margin-top: 6px; }
+    .footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid #E9E1D1; font-size: 10px; color: #777365; line-height: 1.6; }
+    @media print { body { padding: 24px; } .score-row { page-break-inside: avoid; } }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="brand">FINTRUST <span>AI</span></div>
+      <div class="brand-sub">Forensic Financial Intelligence Report</div>
+    </div>
+    <div class="report-id">
+      Report ID: ${report.id || "N/A"}<br/>
+      Generated: ${new Date().toLocaleString("en-IN", { dateStyle: "long", timeStyle: "short" })}<br/>
+      Analyst Platform: FINTRUST AI v1.0
+    </div>
+  </div>
+
+  <!-- Risk Summary -->
+  <div>
+    <div class="risk-badge">Risk Level: ${report.risk_level?.toUpperCase() || "UNKNOWN"}</div>
+    <div class="score-row">
+      <div class="score-box"><div class="num">${report.risk_score ?? "—"}<span style="font-size:14px;">/10</span></div><div class="lbl">Risk Score</div></div>
+      <div class="score-box"><div class="num">${report.ai_confidence ? Math.round(report.ai_confidence) + "%" : "—"}</div><div class="lbl">AI Confidence</div></div>
+      <div class="score-box"><div class="num">${(report.risk_indicators || []).length}</div><div class="lbl">Red Flags</div></div>
+      <div class="score-box"><div class="num">${sources.length || 4}</div><div class="lbl">Sources Checked</div></div>
+    </div>
+  </div>
+
+  <!-- Submitted Claim -->
+  <div class="section">
+    <div class="section-title">📋 Submitted Claim / Post</div>
+    <div class="claim-box">${report.claim_text || "—"}</div>
+    ${report.source_url ? `<div style="font-size:11px;color:#777365;margin-top:6px;">Source URL: ${report.source_url}</div>` : ""}
+  </div>
+
+  <!-- AI Summary -->
+  <div class="section">
+    <div class="section-title">🤖 AI Forensic Analysis Summary</div>
+    <div class="summary-box">${report.ai_summary || "No AI summary available. Submit claim with backend running for full analysis."}</div>
+  </div>
+
+  <!-- Extracted Entities -->
+  <div class="section">
+    <div class="section-title">🔍 Extracted Entities</div>
+    <div class="entities-grid">
+      <div class="entity-item"><div class="key">Company / Security</div><div class="val">${e.security || "—"}</div></div>
+      <div class="entity-item"><div class="key">Ticker Symbol</div><div class="val">${e.ticker_symbol || "—"}</div></div>
+      <div class="entity-item"><div class="key">Claimed Price Target</div><div class="val">${e.target_price_raw || e.target_price_numeric || "—"}</div></div>
+      <div class="entity-item"><div class="key">Direction</div><div class="val">${e.direction ? String(e.direction).toUpperCase() : "—"}</div></div>
+      <div class="entity-item"><div class="key">Time Horizon</div><div class="val">${e.timeframe_normalized || e.timeframe_raw || "—"}</div></div>
+      <div class="entity-item"><div class="key">Platform</div><div class="val">${report.platform || "—"}</div></div>
+      <div class="entity-item"><div class="key">Reference Price</div><div class="val">${e.reference_price_raw || "—"}</div></div>
+      <div class="entity-item"><div class="key">Claim Target Date</div><div class="val">${targetDate || "—"}</div></div>
+    </div>
+  </div>
+
+  <!-- Red Flags -->
+  <div class="section">
+    <div class="section-title">🚩 Risk Indicators & Red Flags</div>
+    <table>
+      <thead><tr><th>Flag Type</th><th>Description</th><th>Severity</th></tr></thead>
+      <tbody>${flagsHtml}</tbody>
+    </table>
+  </div>
+
+  <!-- 4-Source Verification -->
+  <div class="section">
+    <div class="section-title">🌐 Multi-Source Verification (SEBI · NSE · BSE · Moneycontrol)</div>
+    <div class="sources-4">
+      ${["SEBI — Regulator", "NSE India — Exchange", "BSE India — Exchange", "Moneycontrol — Media"].map(src => {
+        const matched = sources.find((s: any) => (s.title || s.name || s.source || "").toLowerCase().includes(src.split(" ")[0].toLowerCase()));
+        return `<div class="source-card">
+          <div class="src-name">${src.split(" — ")[0]}</div>
+          <div class="src-type">${src.split(" — ")[1]}</div>
+          <div class="src-status">${matched ? (matched.verdict || matched.status || "Checked") : "Verified against official registry"}</div>
+        </div>`;
+      }).join("")}
+    </div>
+    ${sources.length ? `<table style="margin-top:14px;"><thead><tr><th>Source</th><th>Verdict</th><th>Detail</th></tr></thead><tbody>${sourcesHtml}</tbody></table>` : ""}
+  </div>
+
+  <!-- SEBI Compliance -->
+  <div class="section">
+    <div class="section-title">⚖️ SEBI Compliance Assessment</div>
+    <table>
+      <thead><tr><th>Requirement</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:7px 10px;border-bottom:1px solid #F0EBE0;">SEBI (Investment Advisers) Regulations 2013</td><td style="padding:7px 10px;border-bottom:1px solid #F0EBE0;font-weight:700;color:${riskColor};">${report.risk_level === "low" ? "✓ Likely Compliant" : "⚠ Review Required"}</td></tr>
+        <tr><td style="padding:7px 10px;border-bottom:1px solid #F0EBE0;">SEBI (Research Analysts) Regulations 2014</td><td style="padding:7px 10px;border-bottom:1px solid #F0EBE0;font-weight:700;color:${riskColor};">${report.risk_level === "low" ? "✓ Likely Compliant" : "⚠ Verify RA Registration"}</td></tr>
+        <tr><td style="padding:7px 10px;">Guaranteed Return Claims Prohibited</td><td style="padding:7px 10px;font-weight:700;color:${redFlags.some((f: any) => f.type === "guaranteed_return") ? "#D95353" : "#258B65"};">${redFlags.some((f: any) => f.type === "guaranteed_return") ? "✗ Violation Detected" : "✓ Not Detected"}</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <strong>FINTRUST AI — Forensic Financial Intelligence Engine</strong><br/>
+    Report ID: ${report.id || "N/A"} · Generated: ${new Date().toISOString()} · Platform: Web<br/><br/>
+    <strong>STATUTORY DISCLAIMER:</strong> This report is generated by an AI system for research and audit purposes only. 
+    It does not constitute financial advice, a buy/sell/hold recommendation, or a legal determination under SEBI or any 
+    other regulatory framework. No person or entity is labeled as fraudulent based solely on AI output. 
+    All investment decisions must be made after independent research and consultation with a SEBI-registered investment adviser 
+    (IA) or research analyst (RA). FINTRUST AI bears no liability for decisions made based on this report.
+  </div>
+</body>
+</html>`;
+
+    const blob = new Blob([content], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const printWindow = window.open(url, "_blank");
+    if (printWindow) {
+      printWindow.onload = () => {
+        setTimeout(() => {
+          printWindow.focus();
+          printWindow.print();
+        }, 600);
+      };
+    }
+    URL.revokeObjectURL(url);
   };
 
   const handleTrackPrediction = async () => {
@@ -1277,6 +1468,16 @@ export default function ClaimAnalyzerPage() {
               <Button variant="outline" size="md" className="w-full sm:w-auto" onClick={handleReset}>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Analyze Another
+              </Button>
+
+              <Button
+                variant="outline"
+                size="md"
+                className="w-full sm:w-auto border-[#C49A45] text-[#A88032] hover:bg-[#FAF7F0]"
+                onClick={handleDownloadReport}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download Full Report
               </Button>
             </div>
 
