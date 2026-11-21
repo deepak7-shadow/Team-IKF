@@ -14,7 +14,7 @@ import {
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { EmptyState } from "../components/ui/EmptyState";
-import { fetchSavedReports, deleteSavedReport } from "../lib/supabase";
+import { fetchSavedReports, deleteSavedReport, supabase } from "../lib/supabase";
 import type { SavedReport } from "../types";
 
 const TYPE_LABELS: Record<string, string> = {
@@ -52,7 +52,17 @@ export default function SavedReportsPage() {
     }
   }, []);
 
-  useEffect(() => { loadReports(); }, [loadReports]);
+  useEffect(() => {
+    loadReports();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      loadReports();
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [loadReports]);
 
   /* ── Filtering ── */
   const filtered = reports.filter((r) => {

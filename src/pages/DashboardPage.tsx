@@ -30,6 +30,7 @@ import {
   fetchClaims,
   fetchPredictions,
   isSupabaseConfigured,
+  supabase,
 } from "../lib/supabase";
 import type { Claim, Prediction } from "../types";
 
@@ -42,22 +43,40 @@ export default function DashboardPage() {
   const luxuryRiskColors = ["#258B65", "#D49A32", "#D6A94F", "#D95353"];
 
   useEffect(() => {
+    let isMounted = true;
+
     async function loadDashboardData() {
       setIsLoading(true);
       try {
+        const { data: { user } } = await supabase.auth.getUser();
         const [loadedClaims, loadedPredictions] = await Promise.all([
-          fetchClaims(),
-          fetchPredictions(),
+          fetchClaims(user?.id),
+          fetchPredictions(user?.id),
         ]);
-        setClaims(loadedClaims);
-        setPredictions(loadedPredictions);
+        if (isMounted) {
+          setClaims(loadedClaims);
+          setPredictions(loadedPredictions);
+        }
       } catch (err) {
         console.error("Error loading dashboard data:", err);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     }
+
     loadDashboardData();
+
+    // Re-fetch when switching accounts or auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      loadDashboardData();
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Compute live metrics strictly from database records

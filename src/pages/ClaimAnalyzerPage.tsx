@@ -32,7 +32,7 @@ import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { EmptyState } from "../components/ui/EmptyState";
-import { createClaim, createPrediction, createSavedReport } from "../lib/supabase";
+import { createClaim, fetchClaims, createPrediction, createSavedReport } from "../lib/supabase";
 import {
   submitClaim,
   fetchClaimHistory,
@@ -332,9 +332,43 @@ export default function ClaimAnalyzerPage() {
     setHistoryLoading(true);
     try {
       const items = await fetchClaimHistory();
-      setHistoryItems(items);
+      if (items && items.length > 0) {
+        setHistoryItems(items);
+      } else {
+        const sbClaims = await fetchClaims();
+        setHistoryItems(
+          sbClaims.map((c: any) => ({
+            id: c.id,
+            claim_text: c.claimText,
+            source_url: null,
+            platform: null,
+            submitted_at: c.submittedAt,
+            status: c.status,
+            risk_level: c.riskLevel,
+            risk_score: c.overallScore,
+            ai_summary: c.summary,
+          }))
+        );
+      }
     } catch {
-      setHistoryItems([]);
+      try {
+        const sbClaims = await fetchClaims();
+        setHistoryItems(
+          sbClaims.map((c: any) => ({
+            id: c.id,
+            claim_text: c.claimText,
+            source_url: null,
+            platform: null,
+            submitted_at: c.submittedAt,
+            status: c.status,
+            risk_level: c.riskLevel,
+            risk_score: c.overallScore,
+            ai_summary: c.summary,
+          }))
+        );
+      } catch {
+        setHistoryItems([]);
+      }
     } finally {
       setHistoryLoading(false);
     }

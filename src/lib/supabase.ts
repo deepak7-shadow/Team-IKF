@@ -25,16 +25,30 @@ export const supabase = createClient(
 // ==========================================
 // PREDICTIONS SERVICE
 // ==========================================
-export async function fetchPredictions(): Promise<Prediction[]> {
+export async function fetchPredictions(userId?: string): Promise<Prediction[]> {
   if (!isSupabaseConfigured()) {
     return [];
   }
 
   try {
-    const { data, error } = await supabase
+    let targetUserId = userId;
+    if (targetUserId === undefined) {
+      const { data: { user } } = await supabase.auth.getUser();
+      targetUserId = user?.id;
+    }
+
+    let query = supabase
       .from("predictions")
       .select("*")
       .order("created_at", { ascending: false });
+
+    if (targetUserId) {
+      query = query.eq("user_id", targetUserId);
+    } else {
+      query = query.is("user_id", null);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.warn("Supabase fetchPredictions error:", error.message);
@@ -74,7 +88,10 @@ export async function createPrediction(prediction: Omit<Prediction, "id" | "crea
   }
 
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+
     const payload = {
+      user_id: user?.id || null,
       influencer_name: prediction.influencerName,
       influencer_id: prediction.influencerId || null,
       asset: prediction.asset,
@@ -132,16 +149,30 @@ export async function createPrediction(prediction: Omit<Prediction, "id" | "crea
 // ==========================================
 // CLAIMS SERVICE
 // ==========================================
-export async function fetchClaims(): Promise<ClaimAnalysis[]> {
+export async function fetchClaims(userId?: string): Promise<ClaimAnalysis[]> {
   if (!isSupabaseConfigured()) {
     return [];
   }
 
   try {
-    const { data, error } = await supabase
+    let targetUserId = userId;
+    if (targetUserId === undefined) {
+      const { data: { user } } = await supabase.auth.getUser();
+      targetUserId = user?.id;
+    }
+
+    let query = supabase
       .from("claims")
       .select("*")
       .order("created_at", { ascending: false });
+
+    if (targetUserId) {
+      query = query.eq("user_id", targetUserId);
+    } else {
+      query = query.is("user_id", null);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.warn("Supabase fetchClaims error:", error.message);
@@ -173,7 +204,10 @@ export async function createClaim(claim: Omit<ClaimAnalysis, "id" | "submittedAt
   }
 
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+
     const payload = {
+      user_id: user?.id || null,
       claim_text: claim.claimText,
       risk_level: claim.riskLevel,
       overall_score: claim.overallScore,
@@ -266,16 +300,30 @@ export async function fetchFinfluencers(): Promise<Finfluencer[]> {
 // ==========================================
 // SAVED REPORTS SERVICE
 // ==========================================
-export async function fetchSavedReports(): Promise<SavedReport[]> {
+export async function fetchSavedReports(userId?: string): Promise<SavedReport[]> {
   if (!isSupabaseConfigured()) {
     return [];
   }
 
   try {
-    const { data, error } = await supabase
+    let targetUserId = userId;
+    if (targetUserId === undefined) {
+      const { data: { user } } = await supabase.auth.getUser();
+      targetUserId = user?.id;
+    }
+
+    let query = supabase
       .from("saved_reports")
       .select("*")
       .order("created_at", { ascending: false });
+
+    if (targetUserId) {
+      query = query.eq("user_id", targetUserId);
+    } else {
+      query = query.is("user_id", null);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.warn("Supabase fetchSavedReports error:", error.message);
@@ -304,7 +352,10 @@ export async function createSavedReport(report: Omit<SavedReport, "id" | "savedA
   }
 
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+
     const payload = {
+      user_id: user?.id || null,
       title: report.title,
       type: report.type,
       risk_level: report.riskLevel,
@@ -364,17 +415,31 @@ export async function deleteSavedReport(id: string): Promise<boolean> {
 // ==========================================
 // NOTIFICATIONS SERVICE
 // ==========================================
-export async function fetchNotifications(): Promise<NotificationItem[]> {
+export async function fetchNotifications(userId?: string): Promise<NotificationItem[]> {
   if (!isSupabaseConfigured()) {
     return [];
   }
 
   try {
-    const { data, error } = await supabase
+    let targetUserId = userId;
+    if (targetUserId === undefined) {
+      const { data: { user } } = await supabase.auth.getUser();
+      targetUserId = user?.id;
+    }
+
+    let query = supabase
       .from("notifications")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(20);
+
+    if (targetUserId) {
+      query = query.eq("user_id", targetUserId);
+    } else {
+      query = query.is("user_id", null);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.warn("Supabase fetchNotifications error:", error.message);

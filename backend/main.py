@@ -386,12 +386,16 @@ def _load_claim_from_db(claim_id: str, user_id: Optional[str], supabase_client=N
 def _list_claims_from_db(user_id: Optional[str], supabase_client=None) -> list[dict]:
     """List all claims for a user."""
     if supabase_client is None:
-        return list(_memory_store.values())
+        if user_id:
+            return [r for r in _memory_store.values() if r.get("user_id") == user_id]
+        return [r for r in _memory_store.values() if not r.get("user_id")]
 
     try:
         query = supabase_client.table("claims").select("*").order("created_at", desc=True)
         if user_id:
             query = query.eq("user_id", user_id)
+        else:
+            query = query.is_("user_id", "null")
         result = query.execute()
         return result.data or []
     except Exception as exc:
@@ -881,15 +885,23 @@ def _load_prediction_record(pid: str, user_id: Optional[str], supabase_client=No
 def _list_all_predictions(user_id: Optional[str], supabase_client=None) -> list[dict]:
     if supabase_client is not None:
         try:
-            res = supabase_client.table("predictions").select("*").order("created_at", desc=True).execute()
+            query = supabase_client.table("predictions").select("*").order("created_at", desc=True)
+            if user_id:
+                query = query.eq("user_id", user_id)
+            else:
+                query = query.is_("user_id", "null")
+            res = query.execute()
             if res.data:
                 for row in res.data:
                     _predictions_store[row["id"]] = row
                 return res.data
+            return []
         except Exception as exc:
             logger.warning("Failed to list predictions from Supabase: %s", exc)
 
-    return list(_predictions_store.values())
+    if user_id:
+        return [r for r in _predictions_store.values() if r.get("user_id") == user_id]
+    return [r for r in _predictions_store.values() if not r.get("user_id")]
 
 
 class PredictionListResponse(BaseModel):

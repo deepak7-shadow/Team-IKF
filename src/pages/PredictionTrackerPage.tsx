@@ -34,6 +34,7 @@ import {
   type PredictionApiRecord,
   type PredictionAnalyticsResponse,
 } from "../lib/api";
+import { supabase } from "../lib/supabase";
 
 type StatusFilter = "all" | "met" | "not_met" | "partially_met" | "inconclusive" | "pending";
 
@@ -126,6 +127,14 @@ export default function PredictionTrackerPage() {
 
   useEffect(() => {
     loadData();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      loadData();
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [loadData]);
 
   // Execute on-demand evaluation
