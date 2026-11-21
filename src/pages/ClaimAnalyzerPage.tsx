@@ -27,7 +27,7 @@ import {
   Layers,
   Download,
 } from "lucide-react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
@@ -277,8 +277,6 @@ function HistoryDrawer({ items, onSelect, isOpen, onClose }: HistoryDrawerProps)
 // MAIN COMPONENT
 // ---------------------------------------------------------------------------
 export default function ClaimAnalyzerPage() {
-  const [searchParams] = useSearchParams();
-
   // Flow state
   const [flowState, setFlowState] = useState<FlowState>("submission");
   const [processingStep, setProcessingStep] = useState(0);
@@ -289,13 +287,6 @@ export default function ClaimAnalyzerPage() {
   const [platform, setPlatform] = useState<Platform>("Other");
   const [targetDate, setTargetDate] = useState("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-
-  useEffect(() => {
-    const q = searchParams.get("query") || searchParams.get("asset") || searchParams.get("claim");
-    if (q) {
-      setClaimInput(`Target price forecast or investment claim regarding ${q}: `);
-    }
-  }, [searchParams]);
 
   // Validation
   const [validationError, setValidationError] = useState<string | null>(null);

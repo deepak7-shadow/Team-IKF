@@ -10,7 +10,6 @@ import PredictionTrackerPage from "./pages/PredictionTrackerPage";
 import InvestorEducationPage from "./pages/InvestorEducationPage";
 import SavedReportsPage from "./pages/SavedReportsPage";
 import SettingsPage from "./pages/SettingsPage";
-import MarketInsightsPage from "./pages/MarketInsightsPage";
 
 export default function App() {
   // Real auth state: null = loading, false = not signed in, true = signed in
@@ -62,8 +61,6 @@ export default function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/claim-analyzer" element={<ClaimAnalyzerPage />} />
           <Route path="/prediction-tracker" element={<PredictionTrackerPage />} />
-          <Route path="/market-insights" element={<MarketInsightsPage />} />
-          <Route path="/news" element={<Navigate to="/market-insights" replace />} />
           <Route path="/investor-education" element={<InvestorEducationPage />} />
           <Route path="/saved-reports" element={<SavedReportsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
